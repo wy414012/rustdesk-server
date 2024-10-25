@@ -19,7 +19,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   LATEST_TAG: latest
-  
+
 jobs:
 
   # binary build
@@ -38,7 +38,7 @@ jobs:
           - { name: "amd64fb",    target: "x86_64-unknown-freebsd" }
 
     steps:
-      
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -57,7 +57,7 @@ jobs:
         with:
           command: build
           args: --release --all-features --target=${{ matrix.job.target }}
-          use-cross: true  
+          use-cross: true
 
       - name: Exec chmod
         run: chmod -v a+x target/${{ matrix.job.target }}/release/*
@@ -77,7 +77,7 @@ jobs:
     runs-on: windows-2019
 
     steps:
-      
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -140,7 +140,7 @@ jobs:
           mv ..\target\x86_64-pc-windows-msvc\release\*.exe SignOutput\
         working-directory: ./ui
 
-      - name: Sign UI setup file 
+      - name: Sign UI setup file
         uses: GermanBluefox/code-sign-action@v7
         if: false
         with:
@@ -165,7 +165,7 @@ jobs:
   release:
 
     name: Github release
-    needs: 
+    needs:
       - build
       - build-win
     runs-on: ubuntu-20.04
@@ -179,7 +179,7 @@ jobs:
           - { os: "linux", name: "i386", suffix: "" }
           - { os: "linux", name: "amd64fb", suffix: "" }
           - { os: "windows", name: "x86_64", suffix: "-unsigned" }
-          
+
     steps:
 
       - name: Download binaries (${{ matrix.job.os }} - ${{ matrix.job.name }})
@@ -202,7 +202,7 @@ jobs:
         with:
           draft: true
           files: ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip
-            
+
   # docker build and push of single-arch images
   docker:
 
@@ -222,7 +222,7 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Download binaries
         uses: actions/download-artifact@v4
         with:
@@ -234,7 +234,7 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -244,7 +244,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-        
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
@@ -324,7 +324,7 @@ jobs:
           extra-images: ${{ secrets.DOCKER_IMAGE }}:${{ env.LATEST_TAG }}-amd64,${{ secrets.DOCKER_IMAGE }}:${{ env.LATEST_TAG }}-arm64v8,${{ secrets.DOCKER_IMAGE }}:${{ env.LATEST_TAG }}-armv7,${{ secrets.DOCKER_IMAGE }}:${{ env.LATEST_TAG }}-i386
           push: true
 
-            
+
   # docker build and push of single-arch images
   docker-classic:
 
@@ -343,7 +343,7 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Download binaries
         uses: actions/download-artifact@v4
         with:
@@ -355,7 +355,7 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -365,7 +365,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-        
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
@@ -462,7 +462,7 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
