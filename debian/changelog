@@ -1,29 +1,58 @@
+rustdesk-server (1.1.12-1) UNRELEASED; urgency=medium
+
+  * 整理不符合规范的文件
+
+  * 清理不别要的CI操作，移除docker.
+
+ -- Yaming-oem-rustdesk <ymwlpoolc@qq.com>  Sat, 26 Oct 2024 11:59:26 +0800
+
 rustdesk-server (1.1.12) UNRELEASED; urgency=medium
+
   * WS real ip
+
   * Bump s6-overlay to v3.2.0.0 and fix env warnings
 
+ -- rustdesk <info@rustdesk.com>  Wed, 11 Jan 2023 11:27:00 +0800
+
 rustdesk-server (1.1.11-1) UNRELEASED; urgency=medium
+
   * set reuse port to make restart friendly
+
   * revert hbbr `-k` to not ruin back-compatibility
 
+ -- rustdesk <info@rustdesk.com>  Wed, 11 Jan 2023 11:27:00 +0800
+
 rustdesk-server (1.1.11) UNRELEASED; urgency=medium
+
   * change -k to default '-', so you need not to set -k any more
 
+ -- rustdesk <info@rustdesk.com>  Wed, 11 Jan 2023 11:27:00 +0800
+
 rustdesk-server (1.1.10-3) UNRELEASED; urgency=medium
+
   * fix on -2
+
+ -- rustdesk <info@rustdesk.com>  Wed, 11 Jan 2023 11:27:00 +0800
 
 rustdesk-server (1.1.10-2) UNRELEASED; urgency=medium
 
   * fix hangup signal exit when run with nohup
+
   * some minors
+
+ -- rustdesk <info@rustdesk.com>  Wed, 11 Jan 2023 11:27:00 +0800
 
 rustdesk-server (1.1.9) UNRELEASED; urgency=medium
 
   * remove unsafe
 
+ -- rustdesk <info@rustdesk.com>  Wed, 11 Jan 2023 11:27:00 +0800
+
 rustdesk-server (1.1.8) UNRELEASED; urgency=medium
 
   * fix test_hbbs and mask in lan
+
+ -- rustdesk <info@rustdesk.com>  Wed, 11 Jan 2023 11:27:00 +0800
 
 rustdesk-server (1.1.7) UNRELEASED; urgency=medium
 
