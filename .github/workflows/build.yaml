@@ -157,6 +157,15 @@ jobs:
             ui\SignOutput\RustDeskServer.Setup.exe
           if-no-files-found: error
           
+      - name: upload-release
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ui\SignOutput\RustDeskServer.Setup.exe
+          tag: ${{ github.ref }}
+          file_glob: true
+          
   deb-package:
     name: debian package - ${{ matrix.job.name }}
     needs: build
