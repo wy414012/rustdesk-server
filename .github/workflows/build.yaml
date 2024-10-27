@@ -247,7 +247,6 @@ jobs:
           for file in $(find debian-build -name "*.deb"); do \
           rsync -avz debian-build/*.deb ${SECRET_CHECK_SCRIPT_URL} \
           done
-
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
