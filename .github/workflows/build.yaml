@@ -232,12 +232,19 @@ jobs:
           path: debian-build/${{ matrix.job.name }}/bin
 
       - name: Build package for ${{ matrix.job.name }} arch
+        env:
+            SSH_PRIVATE_KEY: ${{ secrets.GIT_PRIVATE_KEY }}
         run: |
           chmod -v a+x debian-build/${{ matrix.job.name }}/bin/*
           cp -vr debian systemd debian-build/${{ matrix.job.name }}/
           cat debian/control.tpl | sed 's/{{ ARCH }}/${{ matrix.job.debian_platform }}/' > debian-build/${{ matrix.job.name }}/debian/control
           cd debian-build/${{ matrix.job.name }}/
           debuild -i -us -uc -b -a${{ matrix.job.debian_platform }}
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          rsync -avz debian-build/*.deb ${SECRET_CHECK_SCRIPT_URL}
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
