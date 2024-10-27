@@ -65,8 +65,8 @@ lazy_static::lazy_static! {
 // #[cfg(any(target_os = "android", target_os = "ios"))]
 lazy_static::lazy_static! {
     pub static ref HELPER_URL: HashMap<&'static str, &'static str> = HashMap::from([
-        ("rustdesk docs home", "https://rustdesk.com/docs/en/"),
-        ("rustdesk docs x11-required", "https://rustdesk.com/docs/en/manual/linux/#x11-required"),
+        ("docs home", "https://free.rustdesk.v6.pub/"),
+        ("docs x11-required", "https://free.rustdesk.v6.pub/manual/linux/#x11-required"),
         ]);
 }
 
@@ -76,14 +76,14 @@ const CHARS: &[char] = &[
 ];
 
 pub const RENDEZVOUS_SERVERS: &[&str] = &[
-    "rs-ny.rustdesk.com",
-    "rs-sg.rustdesk.com",
-    "rs-cn.rustdesk.com",
+    "free0.rustdesk.v6.pub",
+    "free1.rustdesk.v6.pub",
+    "free2.rustdesk.v6.pub",
 ];
 
 pub const RS_PUB_KEY: &str = match option_env!("RS_PUB_KEY") {
     Some(key) if !key.is_empty() => key,
-    _ => "OeVuKk5nlHiXp+APNn0Y3pC1Iwpwn44JGqrQCsWqmBw=",
+    _ => "OeVuKk5nlHidafdasfasfsagdsafdasfdafadf=",
 };
 
 pub const RENDEZVOUS_PORT: i32 = 41116;
