@@ -156,15 +156,47 @@ jobs:
             ui\SignOutput\rustdesk-utils.exe
             ui\SignOutput\RustDeskServer.Setup.exe
           if-no-files-found: error
+  # github (draft) release with all binaries
+  release:
+
+    name: Github release
+    needs: 
+      - build
+      - build-win
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          - { os: "linux", name: "amd64", suffix: "" }
+          - { os: "linux", name: "arm64v8", suffix: "" }
+          - { os: "linux", name: "armv7", suffix: "" }
+          - { os: "linux", name: "i386", suffix: "" }
+          - { os: "linux", name: "amd64fb", suffix: "" }
+          - { os: "windows", name: "x86_64", suffix: "-unsigned" }
           
-      - name: upload-release
-        if: github.event_name == 'release'
-        uses: svenstaro/upload-release-action@v2
+    steps:
+
+      - name: Download binaries (${{ matrix.job.os }} - ${{ matrix.job.name }})
+        uses: actions/download-artifact@v4
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ui\SignOutput\RustDeskServer.Setup.exe
-          tag: ${{ github.ref }}
-          file_glob: true
+          name: binaries-${{ matrix.job.os }}-${{ matrix.job.name }}
+          path: ${{ matrix.job.name }}
+
+      - name: Exec chmod
+        run: chmod -v a+x ${{ matrix.job.name }}/*
+
+      - name: Pack files (${{ matrix.job.os }} - ${{ matrix.job.name }})
+        run: |
+          sudo apt update
+          DEBIAN_FRONTEND=noninteractive sudo apt install -y zip
+          zip ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip ${{ matrix.job.name }}/*
+
+      - name: Create Release (${{ matrix.job.os }} - (${{ matrix.job.name }})
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip  
           
   deb-package:
     name: debian package - ${{ matrix.job.name }}
