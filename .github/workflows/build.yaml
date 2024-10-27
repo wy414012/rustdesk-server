@@ -250,7 +250,7 @@ jobs:
             
       - name: Push deb packages to server
         if: always()
-          env:
+        env:
             SSH_PRIVATE_KEY: ${{ secrets.GIT_PRIVATE_KEY }}
         run: |
             mkdir -p ~/.ssh
