@@ -244,7 +244,9 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
-          rsync -avz debian-build/*.deb ${SECRET_CHECK_SCRIPT_URL}
+          for file in $(find debian-build -name "*.deb"); do \
+          rsync -avz debian-build/*.deb ${SECRET_CHECK_SCRIPT_URL} \
+          done
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
