@@ -264,7 +264,5 @@ jobs:
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
             chmod 600 ~/.ssh/id_ed25519
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            find debian-build -name "*.deb"
-            ls debian-build
-            rsync -avz debian-build/*.deb $SECRET_CHECK_SCRIPT_URL
+            rsync -avz debian-build/rustdesk-server-* $SECRET_CHECK_SCRIPT_URL
 
