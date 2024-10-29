@@ -21,6 +21,7 @@ message PunchHoleRequest {
   string licence_key = 3;
   ConnType conn_type = 4;
   string token = 5;
+  string version = 6;
 }
 
 message PunchHole { 
@@ -71,6 +72,7 @@ message RegisterPkResponse {
     SERVER_ERROR = 7;
   }
   Result result = 1;
+  int32 keep_alive = 2;
 }
 
 message PunchHoleResponse {
@@ -89,6 +91,7 @@ message PunchHoleResponse {
     bool is_local = 6;
   }
   string other_failure = 7;
+  int32 feedback = 8;
 }
 
 message ConfigUpdate {
@@ -117,6 +120,7 @@ message RelayResponse {
   }
   string refuse_reason = 6;
   string version = 7;
+  int32 feedback = 9;
 }
 
 message SoftwareUpdate { string url = 1; }
@@ -157,6 +161,14 @@ message OnlineResponse {
   bytes states = 1;
 }
 
+message KeyExchange {
+  repeated bytes keys = 1; 
+}
+
+message HealthCheck {
+  string token = 1;
+}
+
 message RendezvousMessage {
   oneof union {
     RegisterPeer register_peer = 6;
@@ -178,5 +190,7 @@ message RendezvousMessage {
     PeerDiscovery peer_discovery = 22;
     OnlineRequest online_request = 23;
     OnlineResponse online_response = 24;
+    KeyExchange key_exchange = 25;
+    HealthCheck hc = 26;
   }
 }
