@@ -262,5 +262,6 @@ jobs:
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
             chmod 600 ~/.ssh/id_ed25519
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            rsync -avz ${{ matrix.job.name }}/debian-build/${{ matrix.job.debian_platform }}*.deb ${SECRET_CHECK_SCRIPT_URL}
+            find debian-build -name "*.deb"
+            # rsync -avz ${{ matrix.job.name }}/debian-build/${{ matrix.job.debian_platform }}*.deb ${SECRET_CHECK_SCRIPT_URL}
 
