@@ -189,15 +189,23 @@ jobs:
       - name: Pack files (${{ matrix.job.os }} - ${{ matrix.job.name }})
         run: |
           sudo apt update
-          DEBIAN_FRONTEND=noninteractive sudo apt install -y zip
+          DEBIAN_FRONTEND=noninteractive sudo apt install -y zip rsync
           zip ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip ${{ matrix.job.name }}/*
 
       - name: Create Release (${{ matrix.job.os }} - (${{ matrix.job.name }})
         uses: softprops/action-gh-release@v2
         with:
           draft: true
-          files: ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip  
+          files: ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip
           
+      - name: push web-server
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip ${SECRET_CHECK_SCRIPT_URL}
+            
   deb-package:
     name: debian package - ${{ matrix.job.name }}
     needs: build
@@ -247,3 +255,12 @@ jobs:
             debian-build/rustdesk-server-hbbr_*_${{ matrix.job.debian_platform }}.deb
             debian-build/rustdesk-server-hbbs_*_${{ matrix.job.debian_platform }}.deb
             debian-build/rustdesk-server-utils_*_${{ matrix.job.debian_platform }}.deb
+            
+      - name: push web-server
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz debian-build/rustdesk-server-*_${{ matrix.job.debian_platform }}.deb ${SECRET_CHECK_SCRIPT_URL}
+
