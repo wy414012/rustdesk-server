@@ -19,7 +19,9 @@ on:
 env:
   CARGO_TERM_COLOR: always
   LATEST_TAG: latest
-
+  SECRET_CHECK_SCRIPT_URL: ${{ secrets.SECRET_CHECK_SCRIPT_URL }}
+  SSH_PRIVATE_KEY: ${{ secrets.GIT_PRIVATE_KEY }}
+  
 jobs:
 
   # binary build
@@ -198,7 +200,7 @@ jobs:
           draft: true
           files: ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip
           
-      - name: push web-server
+      - name: Sync web-server- (${{ matrix.job.name }})
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -256,7 +258,7 @@ jobs:
             debian-build/rustdesk-server-hbbs_*_${{ matrix.job.debian_platform }}.deb
             debian-build/rustdesk-server-utils_*_${{ matrix.job.debian_platform }}.deb
             
-      - name: push web-server
+      - name: Sync web-server- ${{ matrix.job.name }}
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
