@@ -2,7 +2,7 @@
 name: Bug report
 about: 这里可以是问题咨询，也可以是故障讨论
 title: ''
-labels: 'bug','help'
+labels: 'bug'
 assignees: ''
 
 ---
