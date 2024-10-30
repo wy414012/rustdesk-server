@@ -1,9 +1,9 @@
 ---
-名称：错误报告
-简介：可以是贡献PR，也可以是问题咨询。
-标题：''
-标签：“错误”
-指派人：''
+name: Bug report
+about: 这里可以是问题咨询，也可以是故障讨论
+title: ''
+labels: 'bug','help'
+assignees: ''
 
 ---
 
