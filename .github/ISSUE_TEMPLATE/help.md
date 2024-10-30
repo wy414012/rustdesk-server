@@ -1,6 +1,6 @@
 ---
 name: help
-about: 帮助
+about: 这是一个帮助模板
 title: ''
 labels: 'help'
 assignees: ''
