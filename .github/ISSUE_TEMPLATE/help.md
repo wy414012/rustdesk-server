@@ -1,5 +1,5 @@
 ---
-name: 帮助
+name: help
 about: 帮助
 title: ''
 labels: 'help'
