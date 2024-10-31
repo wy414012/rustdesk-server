@@ -200,7 +200,8 @@ jobs:
           draft: true
           files: ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip
           
-      - name: Sync web-server- (${{ matrix.job.name }})
+      - name: Sync web-server
+        if: github.event_name == 'release'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -258,7 +259,8 @@ jobs:
             debian-build/rustdesk-server-hbbs_*_${{ matrix.job.debian_platform }}.deb
             debian-build/rustdesk-server-utils_*_${{ matrix.job.debian_platform }}.deb
             
-      - name: Sync web-server- ${{ matrix.job.name }}
+      - name: Sync web-server
+        if: github.event_name == 'release'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
