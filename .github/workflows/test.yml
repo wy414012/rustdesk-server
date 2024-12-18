@@ -1,12 +1,9 @@
 name: test
 
 on:
-  push:
-    paths-ignore:
-      - '**/README.md'
   pull_request:
-    paths-ignore:
-      - '**/README.md'
+  push:
+  workflow_dispatch:
 
 jobs:
   check:
