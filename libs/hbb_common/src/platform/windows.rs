@@ -1,9 +1,9 @@
 use std::{
     collections::VecDeque,
-    os::windows::raw::HANDLE,
     sync::{Arc, Mutex},
     time::Instant,
 };
+use winapi::um::winnt::HANDLE;
 use winapi::{
     shared::minwindef::{DWORD, FALSE, TRUE},
     um::{
