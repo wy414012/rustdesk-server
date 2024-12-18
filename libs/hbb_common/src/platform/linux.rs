@@ -1,4 +1,5 @@
 use crate::ResultType;
+use log::error; // 引入日志库
 use std::{collections::HashMap, process::Command};
 
 lazy_static::lazy_static! {
@@ -15,16 +16,22 @@ pub struct Distro {
 
 impl Distro {
     fn new() -> Self {
-        let name = run_cmds("awk -F'=' '/^NAME=/ {print $2}' /etc/os-release")
-            .unwrap_or_default()
-            .trim()
-            .trim_matches('"')
-            .to_string();
-        let version_id = run_cmds("awk -F'=' '/^VERSION_ID=/ {print $2}' /etc/os-release")
-            .unwrap_or_default()
-            .trim()
-            .trim_matches('"')
-            .to_string();
+        let name = match run_cmds("awk -F'=' '/^NAME=/ {print $2}' /etc/os-release") {
+            Ok(name) => name.trim().trim_matches('"').to_string(),
+            Err(e) => {
+                error!("Failed to read NAME from /etc/os-release: {}", e);
+                String::default()
+            }
+        };
+
+        let version_id = match run_cmds("awk -F'=' '/^VERSION_ID=/ {print $2}' /etc/os-release") {
+            Ok(version_id) => version_id.trim().trim_matches('"').to_string(),
+            Err(e) => {
+                error!("Failed to read VERSION_ID from /etc/os-release: {}", e);
+                String::default()
+            }
+        };
+
         Self { name, version_id }
     }
 }
@@ -57,7 +64,13 @@ pub fn get_display_server() -> String {
             session = sid;
         }
         if session.is_empty() {
-            session = run_cmds("cat /proc/self/sessionid").unwrap_or_default();
+            session = match run_cmds("cat /proc/self/sessionid") {
+                Ok(sess) => sess,
+                Err(e) => {
+                    error!("Failed to read session ID from /proc/self/sessionid: {}", e);
+                    String::default()
+                }
+            };
             if session == INVALID_SESSION {
                 session = "".to_owned();
             }
@@ -71,41 +84,40 @@ pub fn get_display_server() -> String {
 }
 
 pub fn get_display_server_of_session(session: &str) -> String {
-    let mut display_server = if let Ok(output) =
-        run_loginctl(Some(vec!["show-session", "-p", "Type", session]))
-    // Check session type of the session
-    {
-        let display_server = String::from_utf8_lossy(&output.stdout)
-            .replace("Type=", "")
-            .trim_end()
-            .into();
-        if display_server == "tty" {
-            // If the type is tty...
-            if let Ok(output) = run_loginctl(Some(vec!["show-session", "-p", "TTY", session]))
-            // Get the tty number
-            {
-                let tty: String = String::from_utf8_lossy(&output.stdout)
-                    .replace("TTY=", "")
-                    .trim_end()
-                    .into();
-                if let Ok(xorg_results) = run_cmds(&format!("ps -e | grep \"{tty}.\\\\+Xorg\""))
-                // And check if Xorg is running on that tty
-                {
-                    if xorg_results.trim_end() != "" {
-                        // If it is, manually return "x11", otherwise return tty
-                        return "x11".to_owned();
+    let mut display_server = match run_loginctl(Some(vec!["show-session", "-p", "Type", session])) {
+        Ok(output) => {
+            let display_server = String::from_utf8_lossy(&output.stdout)
+                .replace("Type=", "")
+                .trim_end()
+                .into();
+            if display_server == "tty" {
+                // If the type is tty...
+                if let Ok(output) = run_loginctl(Some(vec!["show-session", "-p", "TTY", session])) {
+                    // Get the tty number
+                    let tty: String = String::from_utf8_lossy(&output.stdout)
+                        .replace("TTY=", "")
+                        .trim_end()
+                        .into();
+                    if let Ok(xorg_results) = run_cmds(&format!("ps -e | grep \"{tty}.\\\\+Xorg\"")) {
+                        // And check if Xorg is running on that tty
+                        if xorg_results.trim_end() != "" {
+                            // If it is, manually return "x11", otherwise return tty
+                            return "x11".to_owned();
+                        }
                     }
                 }
             }
+            display_server
         }
-        display_server
-    } else {
-        "".to_owned()
+        Err(e) => {
+            error!("Failed to run loginctl show-session command: {}", e);
+            "".to_owned()
+        }
     };
     if display_server.is_empty() || display_server == "tty" {
         // loginctl has not given the expected output.  try something else.
         if let Ok(sestype) = std::env::var("XDG_SESSION_TYPE") {
-            display_server = sestype;
+            display_server = setype;
         }
     }
     if display_server.is_empty() {
