@@ -19,12 +19,13 @@ on:
 env:
   CARGO_TERM_COLOR: always
   LATEST_TAG: latest
+  SECRET_CHECK_SCRIPT_URL: ${{ secrets.SECRET_CHECK_SCRIPT_URL }}
+  SSH_PRIVATE_KEY: ${{ secrets.GIT_PRIVATE_KEY }}
   
 jobs:
 
   # binary build
   build:
-
     name: Build - ${{ matrix.job.name }}
     runs-on: ubuntu-20.04
     strategy:
@@ -38,9 +39,8 @@ jobs:
           - { name: "amd64fb",    target: "x86_64-unknown-freebsd" }
 
     steps:
-      
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
@@ -57,13 +57,13 @@ jobs:
         with:
           command: build
           args: --release --all-features --target=${{ matrix.job.target }}
-          use-cross: true  
+          use-cross: true
 
       - name: Exec chmod
         run: chmod -v a+x target/${{ matrix.job.target }}/release/*
 
       - name: Publish Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: binaries-linux-${{ matrix.job.name }}
           path: |
@@ -75,11 +75,9 @@ jobs:
   build-win:
     name: Build - windows
     runs-on: windows-2019
-
     steps:
-      
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
@@ -107,7 +105,7 @@ jobs:
           scoop install nsis
 
       - name: Install Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 16
 
@@ -140,7 +138,7 @@ jobs:
           mv ..\target\x86_64-pc-windows-msvc\release\*.exe SignOutput\
         working-directory: ./ui
 
-      - name: Sign UI setup file 
+      - name: Sign UI setup file
         uses: GermanBluefox/code-sign-action@v7
         if: false
         with:
@@ -151,7 +149,7 @@ jobs:
           recursive: false
 
       - name: Publish Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: binaries-windows-x86_64
           path: |
@@ -160,7 +158,6 @@ jobs:
             ui\SignOutput\rustdesk-utils.exe
             ui\SignOutput\RustDeskServer.Setup.exe
           if-no-files-found: error
-
   # github (draft) release with all binaries
   release:
 
@@ -173,17 +170,17 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { os: "linux", name: "amd64" }
-          - { os: "linux", name: "arm64v8" }
-          - { os: "linux", name: "armv7" }
-          - { os: "linux", name: "i386" }
-          - { os: "linux", name: "amd64fb" }
-          - { os: "windows", name: "x86_64" }
+          - { os: "linux", name: "amd64", suffix: "" }
+          - { os: "linux", name: "arm64v8", suffix: "" }
+          - { os: "linux", name: "armv7", suffix: "" }
+          - { os: "linux", name: "i386", suffix: "" }
+          - { os: "linux", name: "amd64fb", suffix: "" }
+          - { os: "windows", name: "x86_64", suffix: "-unsigned" }
           
     steps:
 
       - name: Download binaries (${{ matrix.job.os }} - ${{ matrix.job.name }})
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: binaries-${{ matrix.job.os }}-${{ matrix.job.name }}
           path: ${{ matrix.job.name }}
@@ -194,256 +191,25 @@ jobs:
       - name: Pack files (${{ matrix.job.os }} - ${{ matrix.job.name }})
         run: |
           sudo apt update
-          DEBIAN_FRONTEND=noninteractive sudo apt install -y zip
-          zip ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}.zip ${{ matrix.job.name }}/*
+          DEBIAN_FRONTEND=noninteractive sudo apt install -y zip rsync
+          zip ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip ${{ matrix.job.name }}/*
 
       - name: Create Release (${{ matrix.job.os }} - (${{ matrix.job.name }})
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           draft: true
-          files: ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}.zip
+          files: ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip
+          
+      - name: Sync web-server
+        if: github.event_name == 'release'
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip ${SECRET_CHECK_SCRIPT_URL}
             
-  # docker build and push of single-arch images
-  docker:
-
-    name: Docker push - ${{ matrix.job.name }}
-    needs: build
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        job:
-          - { name: "amd64",   docker_platform: "linux/amd64",  s6_platform: "x86_64" }
-          - { name: "arm64v8", docker_platform: "linux/arm64",  s6_platform: "aarch64" }
-          - { name: "armv7",   docker_platform: "linux/arm/v7", s6_platform: "armhf" }
-          - { name: "i386",    docker_platform: "linux/386",    s6_platform: "i686" }
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v3
-        
-      - name: Download binaries
-        uses: actions/download-artifact@v3
-        with:
-          name: binaries-linux-${{ matrix.job.name }}
-          path: docker/rootfs/usr/bin
-
-      - name: Make binaries executable
-        run: chmod -v a+x docker/rootfs/usr/bin/*
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Log in to Docker Hub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-        
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: registry.hub.docker.com/${{ secrets.DOCKER_IMAGE }}
-
-      - name: Get git tag
-        id: vars
-        run: |
-          T=${GITHUB_REF#refs/*/}
-          M=${T%%.*}
-          echo "GIT_TAG=$T" >> $GITHUB_ENV
-          echo "MAJOR_TAG=$M" >> $GITHUB_ENV
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: "./docker"
-          platforms: ${{ matrix.job.docker_platform }}
-          push: true
-          build-args: |
-            S6_ARCH=${{ matrix.job.s6_platform }}
-          tags: |
-            ${{ secrets.DOCKER_IMAGE }}:${{ env.LATEST_TAG }}-${{ matrix.job.name }}
-            ${{ secrets.DOCKER_IMAGE }}:${{ env.GIT_TAG }}-${{ matrix.job.name }}
-            ${{ secrets.DOCKER_IMAGE }}:${{ env.MAJOR_TAG }}-${{ matrix.job.name }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  # docker build and push of multiarch images
-  docker-manifest:
-
-    name: Docker manifest
-    needs: docker
-    runs-on: ubuntu-22.04
-
-    steps:
-
-      - name: Log in to Docker Hub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Get git tag
-        id: vars
-        run: |
-          T=${GITHUB_REF#refs/*/}
-          M=${T%%.*}
-          echo "GIT_TAG=$T" >> $GITHUB_ENV
-          echo "MAJOR_TAG=$M" >> $GITHUB_ENV
-
-      # manifest for :1.2.3 tag
-      #  this has to run only if invoked by a new tag
-      - name: Create and push manifest (:ve.rs.ion)
-        uses: Noelware/docker-manifest-action@master
-        if: github.event_name != 'workflow_dispatch'
-        with:
-          base-image: ${{ secrets.DOCKER_IMAGE }}:${{ env.GIT_TAG }}
-          extra-images: ${{ secrets.DOCKER_IMAGE }}:${{ env.GIT_TAG }}-amd64,${{ secrets.DOCKER_IMAGE }}:${{ env.GIT_TAG }}-arm64v8,${{ secrets.DOCKER_IMAGE }}:${{ env.GIT_TAG }}-armv7,${{ secrets.DOCKER_IMAGE }}:${{ env.GIT_TAG }}-i386
-          push: true
-
-      # manifest for :1 tag (major release)
-      - name: Create and push manifest (:major)
-        uses: Noelware/docker-manifest-action@master
-        with:
-          base-image: ${{ secrets.DOCKER_IMAGE }}:${{ env.MAJOR_TAG }}
-          extra-images: ${{ secrets.DOCKER_IMAGE }}:${{ env.MAJOR_TAG }}-amd64,${{ secrets.DOCKER_IMAGE }}:${{ env.MAJOR_TAG }}-arm64v8,${{ secrets.DOCKER_IMAGE }}:${{ env.MAJOR_TAG }}-armv7,${{ secrets.DOCKER_IMAGE }}:${{ env.MAJOR_TAG }}-i386
-          push: true
-
-      # manifest for :latest tag
-      - name: Create and push manifest (:latest)
-        uses: Noelware/docker-manifest-action@master
-        with:
-          base-image: ${{ secrets.DOCKER_IMAGE }}:${{ env.LATEST_TAG }}
-          extra-images: ${{ secrets.DOCKER_IMAGE }}:${{ env.LATEST_TAG }}-amd64,${{ secrets.DOCKER_IMAGE }}:${{ env.LATEST_TAG }}-arm64v8,${{ secrets.DOCKER_IMAGE }}:${{ env.LATEST_TAG }}-armv7,${{ secrets.DOCKER_IMAGE }}:${{ env.LATEST_TAG }}-i386
-          push: true
-
-            
-  # docker build and push of single-arch images
-  docker-classic:
-
-    name: Docker push - ${{ matrix.job.name }}
-    needs: build
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        job:
-          - { name: "amd64",   docker_platform: "linux/amd64" }
-          - { name: "arm64v8", docker_platform: "linux/arm64" }
-          - { name: "armv7",   docker_platform: "linux/arm/v7" }
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v3
-        
-      - name: Download binaries
-        uses: actions/download-artifact@v3
-        with:
-          name: binaries-linux-${{ matrix.job.name }}
-          path: docker-classic/
-
-      - name: Make binaries executable
-        run: chmod -v a+x docker-classic/*
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Log in to Docker Hub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-        
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: registry.hub.docker.com/${{ secrets.DOCKER_IMAGE_CLASSIC }}
-
-      - name: Get git tag
-        id: vars
-        run: |
-          T=${GITHUB_REF#refs/*/}
-          M=${T%%.*}
-          echo "GIT_TAG=$T" >> $GITHUB_ENV
-          echo "MAJOR_TAG=$M" >> $GITHUB_ENV
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: "./docker-classic"
-          platforms: ${{ matrix.job.docker_platform }}
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.LATEST_TAG }}-${{ matrix.job.name }}
-            ${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.GIT_TAG }}-${{ matrix.job.name }}
-            ${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.MAJOR_TAG }}-${{ matrix.job.name }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  # docker build and push of multiarch images
-  docker-manifest-classic:
-
-    name: Docker manifest
-    needs: docker
-    runs-on: ubuntu-22.04
-
-    steps:
-
-      - name: Log in to Docker Hub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Get git tag
-        id: vars
-        run: |
-          T=${GITHUB_REF#refs/*/}
-          M=${T%%.*}
-          echo "GIT_TAG=$T" >> $GITHUB_ENV
-          echo "MAJOR_TAG=$M" >> $GITHUB_ENV
-
-      # manifest for :1.2.3 tag
-      #  this has to run only if invoked by a new tag
-      - name: Create and push manifest (:ve.rs.ion)
-        uses: Noelware/docker-manifest-action@master
-        if: github.event_name != 'workflow_dispatch'
-        with:
-          base-image: ${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.GIT_TAG }}
-          extra-images: ${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.GIT_TAG }}-amd64,${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.GIT_TAG }}-arm64v8,${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.GIT_TAG }}-armv7
-          push: true
-
-      # manifest for :1 tag (major release)
-      - name: Create and push manifest (:major)
-        uses: Noelware/docker-manifest-action@master
-        with:
-          base-image: ${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.MAJOR_TAG }}
-          extra-images: ${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.MAJOR_TAG }}-amd64,${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.MAJOR_TAG }}-arm64v8,${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.MAJOR_TAG }}-armv7
-          push: true
-
-      # manifest for :latest tag
-      - name: Create and push manifest (:latest)
-        uses: Noelware/docker-manifest-action@master
-        with:
-          base-image: ${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.LATEST_TAG }}
-          extra-images: ${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.LATEST_TAG }}-amd64,${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.LATEST_TAG }}-arm64v8,${{ secrets.DOCKER_IMAGE_CLASSIC }}:${{ env.LATEST_TAG }}-armv7
-          push: true
-
-
   deb-package:
-
     name: debian package - ${{ matrix.job.name }}
     needs: build
     runs-on: ubuntu-22.04
@@ -459,10 +225,10 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v3
-        
+        uses: actions/checkout@v4
+
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Create packaging env
         run: |
@@ -471,7 +237,7 @@ jobs:
           mkdir -p debian-build/${{ matrix.job.name }}/bin
 
       - name: Download binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: binaries-linux-${{ matrix.job.name }}
           path: debian-build/${{ matrix.job.name }}/bin
@@ -485,10 +251,20 @@ jobs:
           debuild -i -us -uc -b -a${{ matrix.job.debian_platform }}
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           draft: true
           files: |
             debian-build/rustdesk-server-hbbr_*_${{ matrix.job.debian_platform }}.deb
             debian-build/rustdesk-server-hbbs_*_${{ matrix.job.debian_platform }}.deb
             debian-build/rustdesk-server-utils_*_${{ matrix.job.debian_platform }}.deb
+            
+      - name: Sync web-server
+        if: github.event_name == 'release'
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz debian-build/rustdesk-server-* $SECRET_CHECK_SCRIPT_URL
+

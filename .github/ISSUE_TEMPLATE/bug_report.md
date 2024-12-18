@@ -1,35 +1,34 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: 这里可以是问题咨询，也可以是故障讨论
 title: ''
 labels: 'bug'
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**描述错误**
+对错误进行清晰简洁的描述。
 
-**Describe the environment**
- - Install environment: docker, docker swarm, podman, kubernetes, or package
- - If available, the `docker-compose.yaml` file
- - If package, we need the distribution and release: Ubuntu 22.04, Debian 11, ...
- - Or if you're running the plain binary, how you're running it
- - In any case, you have to specify the version in use
+**描述环境**
+ - 安装环境：Docker、Docker Swarm、Podman、Kubernetes 或软件包。
+ - 如果有，提供“docker-compose.yaml”文件。
+ - 如果是软件包，我们需要知道发行版和版本：Ubuntu 22.04、Debian 12 等。
+ - 或者如果你正在运行纯二进制文件，说明你是如何运行它的。
+ - 在任何情况下，你都必须指定正在使用的版本。
 
-**How to Reproduce the bug**
-Steps to reproduce the behavior:
-1. Given the previously described environment
-2. Do this and that
-3. I get this error
+**如何重现错误**
+重现该行为的步骤：
+1. 鉴于前面描述的环境。
+2. 执行这样那样的操作。
+3. 我得到这个错误。
 
-**Expected behavior**
-This should happen instead.
+**预期行为**
+应该发生这种情况而不是错误情况。
 
-**Additional context**
-Add any other context about the problem here.
+**附加信息**
+在此处添加关于问题的任何其他上下文信息。
 
-**Notes**
- - Please write in english only. If you provide some images in different languages, you're required to write a translation in english.
- - In any case, **NEVER** put here the content if your `id_ed25519` file
- 
+**注意事项**
+ - 能使用中文的就别用机器翻译英文。
+ - 在任何情况下，**绝对不要**在此处放置你的“id_ed25519” 文件的内容。

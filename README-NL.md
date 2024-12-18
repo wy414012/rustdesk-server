@@ -5,7 +5,7 @@
   <a href="#hoe-maak-je-een-key-paar">Key paar</a> •
   <a href="#deb-pakketten">Debian pakketten</a> •
   <a href="#env-variabelen">ENV variabelen</a><br>
-  [<a href="README.md">English</a>] | [<a href="README-DE.md">Deutsch</a>] | [<a href="README-TW.md">繁體中文</a>]<br>
+  [<a href="README.md">English</a>] | [<a href="README-DE.md">Deutsch</a>] | [<a href="README-TW.md">繁體中文</a>] | [<a href="README-ZH.md">简体中文</a>]<br>
 </p>
 
 # RustDesk Server Programa
@@ -61,11 +61,11 @@ of zonder `--net=host`, maar een directe P2P verbinding zal niet werken.
 Voor systemen die SELinux gebruiken is het vervangen van `/root` door `/root:z` nodig om de containers correct te laten draaien. Als alternatief kan SELinux containerscheiding volledig worden uitgeschakeld door de optie `--security-opt label=disable` toe te voegen.
 
 ```bash
-docker run --name hbbs -p 21115:21115 -p 21116:21116 -p 21116:21116/udp -p 21118:21118 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
-docker run --name hbbr -p 21117:21117 -p 21119:21119 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbr 
+docker run --name hbbs -p 41115:41115 -p 41116:41116 -p 41116:41116/udp -p 41118:41118 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
+docker run --name hbbr -p 41117:41117 -p 41119:41119 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbr 
 ```
 
-De `relay-server-ip` parameter is het IP adres (of dns naam) van de server waarop deze containers draaien. De **optionele** `port` parameter moet gebruikt worden als je een andere poort dan **21117** gebruikt voor `hbbr`.
+De `relay-server-ip` parameter is het IP adres (of dns naam) van de server waarop deze containers draaien. De **optionele** `port` parameter moet gebruikt worden als je een andere poort dan **41117** gebruikt voor `hbbr`.
 
 U kunt ook docker-compose gebruiken, met deze configuratie als sjabloon:
 
@@ -80,12 +80,12 @@ services:
   hbbs:
     container_name: hbbs
     ports:
-      - 21115:21115
-      - 21116:21116
-      - 21116:21116/udp
-      - 21118:21118
+      - 41115:41115
+      - 41116:41116
+      - 41116:41116/udp
+      - 41118:41118
     image: rustdesk/rustdesk-server:latest
-    command: hbbs -r rustdesk.example.com:21117
+    command: hbbs -r rustdesk.example.com:41117
     volumes:
       - ./data:/root
     networks:
@@ -97,8 +97,8 @@ services:
   hbbr:
     container_name: hbbr
     ports:
-      - 21117:21117
-      - 21119:21119
+      - 41117:41117
+      - 41119:41119
     image: rustdesk/rustdesk-server:latest
     command: hbbr
     volumes:
@@ -108,7 +108,7 @@ services:
     restart: unless-stopped
 ```
 
-Bewerk regel 16 om te verwijzen naar uw relais-server (degene die luistert op poort 21117). U kunt ook de inhoudsregels (L18 en L33) bewerken indien nodig.
+Bewerk regel 16 om te verwijzen naar uw relais-server (degene die luistert op poort 41117). U kunt ook de inhoudsregels (L18 en L33) bewerken indien nodig.
 
 (docker-compose erkenning gaat naar @lukebarone en @QuiGonLeong)
 
@@ -152,8 +152,8 @@ of zonder `--net=host`, maar een directe P2P verbinding zal niet werken.
 
 ```bash
 docker run --name rustdesk-server \
-  -p 21115:21115 -p 21116:21116 -p 21116:21116/udp \
-  -p 21117:21117 -p 21118:21118 -p 21119:21119 \
+  -p 41115:41115 -p 41116:41116 -p 41116:41116/udp \
+  -p 41117:41117 -p 41118:41118 -p 41119:41119 \
   -e "RELAY=rustdeskrelay.example.com" \
   -e "ENCRYPTED_ONLY=1" \
   -v "$PWD/data:/data" -d rustdesk/rustdesk-server-s6:latest
@@ -168,15 +168,15 @@ services:
   rustdesk-server:
     container_name: rustdesk-server
     ports:
-      - 21115:21115
-      - 21116:21116
-      - 21116:21116/udp
-      - 21117:21117
-      - 21118:21118
-      - 21119:21119
+      - 41115:41115
+      - 41116:41116
+      - 41116:41116/udp
+      - 41117:41117
+      - 41118:41118
+      - 41119:41119
     image: rustdesk/rustdesk-server-s6:latest
     environment:
-      - "RELAY=rustdesk.example.com:21117"
+      - "RELAY=rustdesk.example.com:41117"
       - "ENCRYPTED_ONLY=1"
     volumes:
       - ./data:/data
@@ -222,15 +222,15 @@ services:
   rustdesk-server:
     container_name: rustdesk-server
     ports:
-      - 21115:21115
-      - 21116:21116
-      - 21116:21116/udp
-      - 21117:21117
-      - 21118:21118
-      - 21119:21119
+      - 41115:41115
+      - 41116:41116
+      - 41116:41116/udp
+      - 41117:41117
+      - 41118:41118
+      - 41119:41119
     image: rustdesk/rustdesk-server-s6:latest
     environment:
-      - "RELAY=rustdesk.example.com:21117"
+      - "RELAY=rustdesk.example.com:41117"
       - "ENCRYPTED_ONLY=1"
       - "DB_URL=/db/db_v2.sqlite3"
       - "KEY_PRIV=FR2j78IxfwJNR+HjLluQ2Nh7eEryEeIZCwiQDPVe+PaITKyShphHAsPLn7So0OqRs92nGvSRdFJnE2MSyrKTIQ=="
@@ -266,15 +266,15 @@ services:
   rustdesk-server:
     container_name: rustdesk-server
     ports:
-      - 21115:21115
-      - 21116:21116
-      - 21116:21116/udp
-      - 21117:21117
-      - 21118:21118
-      - 21119:21119
+      - 41115:41115
+      - 41116:41116
+      - 41116:41116/udp
+      - 41117:41117
+      - 41118:41118
+      - 41119:41119
     image: rustdesk/rustdesk-server-s6:latest
     environment:
-      - "RELAY=rustdesk.example.com:21117"
+      - "RELAY=rustdesk.example.com:41117"
       - "ENCRYPTED_ONLY=1"
       - "DB_URL=/db/db_v2.sqlite3"
     volumes:
@@ -338,7 +338,7 @@ U kunt de variabelen zoals gebruikelijk opgeven of een `.env` bestand gebruiken.
 | DOWNGRADE_THRESHOLD | hbbr | drempel van downgrade controle (bit/ms) |
 | KEY | hbbs/hbbr | indien ingesteld forceert dit het gebruik van een specifieke toets, indien ingesteld op **"_"** forceert dit het gebruik van een willekeurige toets |
 | LIMIT_SPEED | hbbr | snelheidslimiet (in Mb/s) |
-| PORT | hbbs/hbbr | luister-poort (21116 voor hbbs - 21117 voor hbbr) |
+| PORT | hbbs/hbbr | luister-poort (41116 voor hbbs - 41117 voor hbbr) |
 | RELAY_SERVERS | hbbs | IP-adres/DNS-naam van de machines waarop hbbr draait (gescheiden door komma) |
 | RUST_LOG | all | debug-niveau instellen (error\|warn\|info\|debug\|trace) |
 | SINGLE_BANDWIDTH | hbbr | maximale bandbreedte voor een enkele verbinding (in Mb/s) |

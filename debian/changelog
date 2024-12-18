@@ -1,27 +1,9 @@
-rustdesk-server (1.1.10-3) UNRELEASED; urgency=medium
-  * fix on -2
+rustdesk-server (1.3.2) UNRELEASED; urgency=medium
 
-rustdesk-server (1.1.10-2) UNRELEASED; urgency=medium
+  * 变更版本号，对应当前客户端
 
-  * fix hangup signal exit when run with nohup
-  * some minors
+  * 清理不别要的CI操作，移除docker.
 
-rustdesk-server (1.1.9) UNRELEASED; urgency=medium
-
-  * remove unsafe
-
-rustdesk-server (1.1.8) UNRELEASED; urgency=medium
-
-  * fix test_hbbs and mask in lan
-
-rustdesk-server (1.1.7) UNRELEASED; urgency=medium
-
-  * ipv6 support
-
- -- rustdesk <info@rustdesk.com>  Wed, 11 Jan 2023 11:27:00 +0800
-
-rustdesk-server (1.1.6) UNRELEASED; urgency=medium
-
-  * Initial release
-
- -- open-trade <info@rustdesk.com>  Fri, 15 Jul 2022 12:27:27 +0200
+  * 初始化克隆的服务端首次版本，清理掉前版本的不和规范的日志
+ 
+ -- Yaming-oem-rustdesk <ymwlpoolc@qq.com>  Sun, 27 Oct 2024 15:29:39 +0800
