@@ -9,6 +9,7 @@ name: build
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
@@ -45,7 +46,7 @@ jobs:
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: "1.70.0"
+          toolchain: "1.82.0"
           override: true
           default: true
           components: rustfmt
@@ -82,7 +83,7 @@ jobs:
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: "1.70.0"
+          toolchain: "1.82.0"
           override: true
           default: true
           components: rustfmt
