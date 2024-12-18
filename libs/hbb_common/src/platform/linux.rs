@@ -108,7 +108,7 @@ pub fn get_display_server_of_session(session: &str) -> String {
             display_server = sestype;
         }
     }
-    if display_server == "" {
+    if display_server.is_empty() {
         display_server = "x11".to_owned();
     }
     display_server.to_lowercase()
@@ -117,7 +117,7 @@ pub fn get_display_server_of_session(session: &str) -> String {
 #[inline]
 fn line_values(indices: &[usize], line: &str) -> Vec<String> {
     indices
-        .into_iter()
+        .iter()
         .map(|idx| line.split_whitespace().nth(*idx).unwrap_or("").to_owned())
         .collect::<Vec<String>>()
 }
