@@ -75,7 +75,6 @@ message RegisterPkResponse {
   }
   Result result = 1;
   int32 keep_alive = 2;
-  int32 keep_alive = 2;
 }
 
 message PunchHoleResponse {
@@ -174,10 +173,6 @@ message KeyExchange {
 
 message HealthCheck {
   string token = 1;
-}
-
-message KeyExchange {
-  repeated bytes keys = 1; 
 }
 
 message RendezvousMessage {
