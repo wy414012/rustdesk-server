@@ -68,10 +68,11 @@ fn new_socket(addr: std::net::SocketAddr, reuse: bool) -> Result<TcpSocket, std:
         std::net::SocketAddr::V6(..) => TcpSocket::new_v6()?,
     };
     if reuse {
-        // windows has no reuse_port, but it's reuse_address
+        // windows has no reuse_port, but its reuse_address
         // almost equals to unix's reuse_port + reuse_address,
-        // though may introduce nondeterministic behavior
-        #[cfg(unix)]
+        // though may introduce nondeterministic behavior.
+        // illumos has no support for SO_REUSEPORT
+        #[cfg(all(unix, not(target_os = "illumos")))]
         socket.set_reuseport(true).ok();
         socket.set_reuseaddr(true).ok();
     }
@@ -86,16 +87,14 @@ impl FramedStream {
         ms_timeout: u64,
     ) -> ResultType<Self> {
         for remote_addr in lookup_host(&remote_addr).await? {
-            let local = if let Some(addr) = local_addr {
-                addr
-            } else {
+            let local = local_addr.unwrap_or_else(|| {
                 crate::config::Config::get_any_listen_addr(remote_addr.is_ipv4())
-            };
+            });
             if let Ok(socket) = new_socket(local, true) {
                 if let Ok(Ok(stream)) =
                     super::timeout(ms_timeout, socket.connect(remote_addr)).await
                 {
-                    stream.set_nodelay(true).ok();
+                    stream.set_nodelay(true)?;
                     let addr = stream.local_addr()?;
                     return Ok(Self(
                         Framed::new(DynTcpStream(Box::new(stream)), BytesCodec::new()),
@@ -122,14 +121,11 @@ impl FramedStream {
         T: IntoTargetAddr<'t>,
     {
         if let Some(Ok(proxy)) = proxy.to_proxy_addrs().next().await {
-            let local = if let Some(addr) = local_addr {
-                addr
-            } else {
-                crate::config::Config::get_any_listen_addr(proxy.is_ipv4())
-            };
+            let local = local_addr
+                .unwrap_or_else(|| crate::config::Config::get_any_listen_addr(proxy.is_ipv4()));
             let stream =
                 super::timeout(ms_timeout, new_socket(local, true)?.connect(proxy)).await??;
-            stream.set_nodelay(true).ok();
+            stream.set_nodelay(true)?;
             let stream = if username.trim().is_empty() {
                 super::timeout(
                     ms_timeout,
@@ -256,8 +252,17 @@ pub async fn new_listener<T: ToSocketAddrs>(addr: T, reuse: bool) -> ResultType<
     }
 }
 
-pub async fn listen_any(port: u16) -> ResultType<TcpListener> {
+pub async fn listen_any(port: u16, reuse: bool) -> ResultType<TcpListener> {
     if let Ok(mut socket) = TcpSocket::new_v6() {
+        if reuse {
+            // windows has no reuse_port, but its reuse_address
+            // almost equals to unix's reuse_port + reuse_address,
+            // though may introduce nondeterministic behavior.
+            // illumos has no support for SO_REUSEPORT
+            #[cfg(all(unix, not(target_os = "illumos")))]
+            socket.set_reuseport(true).ok();
+            socket.set_reuseaddr(true).ok();
+        }
         #[cfg(unix)]
         {
             socket.set_reuseport(true).ok();

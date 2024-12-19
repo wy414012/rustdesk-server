@@ -97,7 +97,7 @@ type Sender = mpsc::UnboundedSender<Data>;
 type Receiver = mpsc::UnboundedReceiver<Data>;
 static ROTATION_RELAY_SERVER: AtomicUsize = AtomicUsize::new(0);
 type RelayServers = Vec<String>;
-static CHECK_RELAY_TIMEOUT: u64 = 3_000;
+const CHECK_RELAY_TIMEOUT: u64 = 3_000;
 static ALWAYS_USE_RELAY: AtomicBool = AtomicBool::new(false);
 
 #[derive(Clone)]
@@ -1235,13 +1235,29 @@ impl RendezvousServer {
     async fn handle_listener_inner(
         &mut self,
         stream: TcpStream,
-        addr: SocketAddr,
+        mut addr: SocketAddr,
         key: &str,
         ws: bool,
     ) -> ResultType<()> {
         let mut sink;
         if ws {
-            let ws_stream = tokio_tungstenite::accept_async(stream).await?;
+            use tokio_tungstenite::tungstenite::handshake::server::{Request, Response};
+            let callback = |req: &Request, response: Response| {
+                let headers = req.headers();
+                let real_ip = headers
+                    .get("X-Real-IP")
+                    .or_else(|| headers.get("X-Forwarded-For"))
+                    .and_then(|header_value| header_value.to_str().ok());
+                if let Some(ip) = real_ip {
+                    if ip.contains('.') {
+                        addr = format!("{ip}:0").parse().unwrap_or(addr);
+                    } else {
+                        addr = format!("[{ip}]:0").parse().unwrap_or(addr);
+                    }
+                }
+                Ok(response)
+            };
+            let ws_stream = tokio_tungstenite::accept_hdr_async(stream, callback).await?;
             let (a, mut b) = ws_stream.split();
             sink = Some(Sink {
                 tx: SinkType::Ws(a),
@@ -1333,14 +1349,11 @@ impl RendezvousServer {
             out_sk = sk;
             if !key.is_empty() {
                 key = pk;
-            } else {
-                std::env::set_var("KEY_FOR_API", pk);
             }
         }
 
         if !key.is_empty() {
             log::info!("Key: {}", key);
-            std::env::set_var("KEY_FOR_API", key.clone());
         }
         (key, out_sk)
     }
@@ -1456,19 +1469,19 @@ async fn test_hbbs(addr: SocketAddr) -> ResultType<()> {
 
 async fn create_udp_listener(port: i32, rmem: usize) -> ResultType<FramedSocket> {
     let addr = SocketAddr::new(IpAddr::V6(Ipv6Addr::UNSPECIFIED), port as _);
-    if let Ok(s) = FramedSocket::new_reuse(&addr, false, rmem).await {
+    if let Ok(s) = FramedSocket::new_reuse(&addr, true, rmem).await {
         log::debug!("listen on udp {:?}", s.local_addr());
         return Ok(s);
     }
     let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED), port as _);
-    let s = FramedSocket::new_reuse(&addr, false, rmem).await?;
+    let s = FramedSocket::new_reuse(&addr, true, rmem).await?;
     log::debug!("listen on udp {:?}", s.local_addr());
     Ok(s)
 }
 
 #[inline]
 async fn create_tcp_listener(port: i32) -> ResultType<TcpListener> {
-    let s = listen_any(port as _).await?;
+    let s = listen_any(port as _, true).await?;
     log::debug!("listen on tcp {:?}", s.local_addr());
     Ok(s)
 }
