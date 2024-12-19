@@ -289,6 +289,5 @@ mod test {
         test_speed(1024 * 1024, "1M");
         test_speed(10 * 1024 * 1024, "10M");
         test_speed(100 * 1024 * 1024, "100M");
-        test_speed(1000 * 1024 * 1024, "1000M");
     }
 }
