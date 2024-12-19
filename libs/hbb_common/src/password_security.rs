@@ -106,15 +106,13 @@ pub fn encrypt_str_or_original(s: &str, version: &str, max_len: usize) -> String
 // note: s.len() return length in bytes, s.chars().count() return char count
 //       &[..2] return the left 2 bytes, s.chars().take(2) return the left 2 chars
 pub fn decrypt_str_or_original(s: &str, current_version: &str) -> (String, bool, bool) {
-    if s.len() > VERSION_LEN {
-        if s.starts_with("00") {
-            if let Ok(v) = decrypt(s[VERSION_LEN..].as_bytes()) {
-                return (
-                    String::from_utf8_lossy(&v).to_string(),
-                    true,
-                    "00" != current_version,
-                );
-            }
+    if s.len() > VERSION_LEN && s.starts_with("00") {
+        if let Ok(v) = decrypt(s[VERSION_LEN..].as_bytes()) {
+            return (
+                String::from_utf8_lossy(&v).to_string(),
+                true,
+                "00" != current_version,
+            );
         }
     }
 
@@ -291,5 +289,6 @@ mod test {
         test_speed(1024 * 1024, "1M");
         test_speed(10 * 1024 * 1024, "10M");
         test_speed(100 * 1024 * 1024, "100M");
+        test_speed(1000 * 1024 * 1024, "1000M");
     }
 }
