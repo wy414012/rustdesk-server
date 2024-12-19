@@ -87,16 +87,12 @@ impl FramedStream {
         ms_timeout: u64,
     ) -> ResultType<Self> {
         for remote_addr in lookup_host(&remote_addr).await? {
-            let local = if let Some(addr) = local_addr {
-                addr
-            } else {
-                crate::config::Config::get_any_listen_addr(remote_addr.is_ipv4())
-            };
+            let local = local_addr.unwrap_or_else(|| crate::config::Config::get_any_listen_addr(remote_addr.is_ipv4()));
             if let Ok(socket) = new_socket(local, true) {
                 if let Ok(Ok(stream)) =
                     super::timeout(ms_timeout, socket.connect(remote_addr)).await
                 {
-                    stream.set_nodelay(true).ok();
+                    stream.set_nodelay(true)?;
                     let addr = stream.local_addr()?;
                     return Ok(Self(
                         Framed::new(DynTcpStream(Box::new(stream)), BytesCodec::new()),
@@ -123,14 +119,10 @@ impl FramedStream {
         T: IntoTargetAddr<'t>,
     {
         if let Some(Ok(proxy)) = proxy.to_proxy_addrs().next().await {
-            let local = if let Some(addr) = local_addr {
-                addr
-            } else {
-                crate::config::Config::get_any_listen_addr(proxy.is_ipv4())
-            };
+            let local = local_addr.unwrap_or_else(|| crate::config::Config::get_any_listen_addr(proxy.is_ipv4()));
             let stream =
                 super::timeout(ms_timeout, new_socket(local, true)?.connect(proxy)).await??;
-            stream.set_nodelay(true).ok();
+            stream.set_nodelay(true)?;
             let stream = if username.trim().is_empty() {
                 super::timeout(
                     ms_timeout,
