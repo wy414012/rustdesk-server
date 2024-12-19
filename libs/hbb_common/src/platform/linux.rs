@@ -204,11 +204,7 @@ pub fn run_cmds_trim_newline(cmds: &str) -> ResultType<String> {
         .args(vec!["-c", cmds])
         .output()?;
     let out = String::from_utf8_lossy(&output.stdout);
-    Ok(if out.ends_with('\n') {
-        out[..out.len() - 1].to_string()
-    } else {
-        out.to_string()
-    })
+    Ok(out.trim_end_matches('\n').to_string())
 }
 
 #[cfg(not(feature = "flatpak"))]
