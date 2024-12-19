@@ -196,13 +196,13 @@ jobs:
           zip ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip ${{ matrix.job.name }}/*
 
       - name: Create Release (${{ matrix.job.os }} - (${{ matrix.job.name }})
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           draft: true
           files: ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip
           
       - name: Sync web-server
-        if: github.event_name == 'release'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -252,6 +252,7 @@ jobs:
           debuild -i -us -uc -b -a${{ matrix.job.debian_platform }}
 
       - name: Create Release
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           draft: true
@@ -261,7 +262,6 @@ jobs:
             debian-build/rustdesk-server-utils_*_${{ matrix.job.debian_platform }}.deb
             
       - name: Sync web-server
-        if: github.event_name == 'release'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
