@@ -138,12 +138,11 @@ fn _get_values_of_seat0(indices: &[usize], ignore_gdm_wayland: bool) -> Vec<Stri
             if line.contains("seat0") {
                 if let Some(sid) = line.split_whitespace().next() {
                     if is_active(sid) {
-                        if ignore_gdm_wayland {
-                            if is_gdm_user(line.split_whitespace().nth(2).unwrap_or(""))
-                                && get_display_server_of_session(sid) == DISPLAY_SERVER_WAYLAND
-                            {
-                                continue;
-                            }
+                        if ignore_gdm_wayland
+                            && is_gdm_user(line.split_whitespace().nth(2).unwrap_or(""))
+                            && get_display_server_of_session(sid) == DISPLAY_SERVER_WAYLAND
+                        {
+                            continue;
                         }
                         return line_values(indices, line);
                     }
@@ -156,12 +155,11 @@ fn _get_values_of_seat0(indices: &[usize], ignore_gdm_wayland: bool) -> Vec<Stri
             if let Some(sid) = line.split_whitespace().next() {
                 if is_active(sid) {
                     let d = get_display_server_of_session(sid);
-                    if ignore_gdm_wayland {
-                        if is_gdm_user(line.split_whitespace().nth(2).unwrap_or(""))
-                            && d == DISPLAY_SERVER_WAYLAND
-                        {
-                            continue;
-                        }
+                    if ignore_gdm_wayland
+                        && is_gdm_user(line.split_whitespace().nth(2).unwrap_or(""))
+                        && d == DISPLAY_SERVER_WAYLAND
+                    {
+                        continue;
                     }
                     if d == "tty" {
                         continue;
