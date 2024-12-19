@@ -87,7 +87,9 @@ impl FramedStream {
         ms_timeout: u64,
     ) -> ResultType<Self> {
         for remote_addr in lookup_host(&remote_addr).await? {
-            let local = local_addr.unwrap_or_else(|| crate::config::Config::get_any_listen_addr(remote_addr.is_ipv4()));
+            let local = local_addr.unwrap_or_else(|| {
+                crate::config::Config::get_any_listen_addr(remote_addr.is_ipv4())
+            });
             if let Ok(socket) = new_socket(local, true) {
                 if let Ok(Ok(stream)) =
                     super::timeout(ms_timeout, socket.connect(remote_addr)).await
@@ -119,7 +121,8 @@ impl FramedStream {
         T: IntoTargetAddr<'t>,
     {
         if let Some(Ok(proxy)) = proxy.to_proxy_addrs().next().await {
-            let local = local_addr.unwrap_or_else(|| crate::config::Config::get_any_listen_addr(proxy.is_ipv4()));
+            let local = local_addr
+                .unwrap_or_else(|| crate::config::Config::get_any_listen_addr(proxy.is_ipv4()));
             let stream =
                 super::timeout(ms_timeout, new_socket(local, true)?.connect(proxy)).await??;
             stream.set_nodelay(true)?;
