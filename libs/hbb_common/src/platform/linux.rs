@@ -280,6 +280,9 @@ mod tests {
     fn test_run_cmds_trim_newline() {
         assert_eq!(run_cmds_trim_newline("echo -n 123").unwrap(), "123");
         assert_eq!(run_cmds_trim_newline("echo 123").unwrap(), "123");
-        assert_eq!(run_cmds_trim_newline("whoami").unwrap() + "\n", run_cmds("whoami").unwrap());
+        assert_eq!(
+            run_cmds_trim_newline("whoami").unwrap() + "\n",
+            run_cmds("whoami").unwrap()
+        );
     }
 }
