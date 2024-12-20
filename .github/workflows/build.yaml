@@ -262,7 +262,6 @@ jobs:
             debian-build/rustdesk-server-utils_*_${{ matrix.job.debian_platform }}.deb
 
       - name: Sync web-server
-        if: github.event_name == 'release'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
