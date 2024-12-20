@@ -54,15 +54,15 @@ You could use `latest` tag or major version tag `1` with supported architectures
 
 | Version       | image:tag                         |
 | ------------- | --------------------------------- |
-| latest        | `rustdesk/rustdesk-server:latest` |
-| Major version | `rustdesk/rustdesk-server:1`      |
+| latest        | `wy368/openrustdesk-server:latest` |
+| Major version | `wy368/openrustdesk-server:1`      |
 
 
 You can start these images directly with `docker run` with these commands:
 
 ```bash
-docker run --name hbbs --net=host -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
-docker run --name hbbr --net=host -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbr 
+docker run --name hbbs --net=host -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
+docker run --name hbbr --net=host -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbr 
 ```
 
 or without `--net=host`, but P2P direct connection can not work.
@@ -70,8 +70,8 @@ or without `--net=host`, but P2P direct connection can not work.
 For systems using SELinux, replacing `/root` by `/root:z` is required for the containers to run correctly. Alternatively, SELinux container separation can be disabled completely adding the option `--security-opt label=disable`.
 
 ```bash
-docker run --name hbbs -p 21115:21115 -p 21116:21116 -p 21116:21116/udp -p 21118:21118 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
-docker run --name hbbr -p 21117:21117 -p 21119:21119 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbr 
+docker run --name hbbs -p 21115:21115 -p 21116:21116 -p 21116:21116/udp -p 21118:21118 -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
+docker run --name hbbr -p 21117:21117 -p 21119:21119 -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbr 
 ```
 
 The `relay-server-ip` parameter is the IP address (or dns name) of the server running these containers. The **optional** `port` parameter has to be used if you use a port different than **21117** for `hbbr`.
@@ -93,7 +93,7 @@ services:
       - 21116:21116
       - 21116:21116/udp
       - 21118:21118
-    image: rustdesk/rustdesk-server:latest
+    image: wy368/openrustdesk-server:latest
     command: hbbs -r rustdesk.example.com:21117
     volumes:
       - ./data:/root
@@ -108,7 +108,7 @@ services:
     ports:
       - 21117:21117
       - 21119:21119
-    image: rustdesk/rustdesk-server:latest
+    image: wy368/openrustdesk-server:latest
     command: hbbr
     volumes:
       - ./data:/root
@@ -122,7 +122,7 @@ Edit line 16 to point to your relay server (the one listening on port 21117). Yo
 (docker-compose credit goes to @lukebarone and @QuiGonLeong)
 
 > [!NOTE]  
-> The rustdesk/rustdesk-server:latest in China may be replaced with the latest version number on Docker Hub, such as `rustdesk-server:1.1.10-3`. Otherwise, the old version may be pulled due to image acceleration.
+> The wy368/openrustdesk-server:latest in China may be replaced with the latest version number on Docker Hub, such as `rustdesk-server:1.1.10-3`. Otherwise, the old version may be pulled due to image acceleration.
 
 > [!NOTE]  
 > If you are experiencing issues pulling from Docker Hub, try pulling from the [GitHub Container Registry](https://github.com/rustdesk/rustdesk-server/pkgs/container/rustdesk-server) instead.
@@ -140,7 +140,7 @@ You could use `latest` tag or major version tag `1` with supported architectures
 
 | Version       | image:tag                            |
 | ------------- | ------------------------------------ |
-| latest        | `rustdesk/rustdesk-server-s6:latest` |
+| latest        | `wy368/openrustdesk-server:latest` |
 | Major version | `rustdesk/rustdesk-server-s6:1`      |
 
 The S6-overlay acts as a supervisor and keeps both process running, so with this image, there's no need to have two separate running containers.
@@ -152,7 +152,7 @@ docker run --name rustdesk-server \
   --net=host \
   -e "RELAY=rustdeskrelay.example.com" \
   -e "ENCRYPTED_ONLY=1" \
-  -v "$PWD/data:/data" -d rustdesk/rustdesk-server-s6:latest
+  -v "$PWD/data:/data" -d wy368/openrustdesk-server:latest
 ```
 
 or without `--net=host`, but P2P direct connection cannot work.
@@ -163,7 +163,7 @@ docker run --name rustdesk-server \
   -p 21117:21117 -p 21118:21118 -p 21119:21119 \
   -e "RELAY=rustdeskrelay.example.com" \
   -e "ENCRYPTED_ONLY=1" \
-  -v "$PWD/data:/data" -d rustdesk/rustdesk-server-s6:latest
+  -v "$PWD/data:/data" -d wy368/openrustdesk-server:latest
 ```
 
 Or you can use a docker-compose file:
@@ -181,7 +181,7 @@ services:
       - 21117:21117
       - 21118:21118
       - 21119:21119
-    image: rustdesk/rustdesk-server-s6:latest
+    image: wy368/openrustdesk-server:latest
     environment:
       - "RELAY=rustdesk.example.com:21117"
       - "ENCRYPTED_ONLY=1"
@@ -219,7 +219,7 @@ docker run --name rustdesk-server \
   -e "DB_URL=/db/db_v2.sqlite3" \
   -e "KEY_PRIV=FR2j78IxfwJNR+HjLluQ2Nh7eEryEeIZCwiQDPVe+PaITKyShphHAsPLn7So0OqRs92nGvSRdFJnE2MSyrKTIQ==" \
   -e "KEY_PUB=iEyskoaYRwLDy5+0qNDqkbPdpxr0kXRSZxNjEsqykyE=" \
-  -v "$PWD/db:/db" -d rustdesk/rustdesk-server-s6:latest
+  -v "$PWD/db:/db" -d wy368/openrustdesk-server:latest
 ```
 
 ```yaml
@@ -235,7 +235,7 @@ services:
       - 21117:21117
       - 21118:21118
       - 21119:21119
-    image: rustdesk/rustdesk-server-s6:latest
+    image: wy368/openrustdesk-server:latest
     environment:
       - "RELAY=rustdesk.example.com:21117"
       - "ENCRYPTED_ONLY=1"
@@ -263,7 +263,7 @@ docker service create --name rustdesk-server \
   -e "ENCRYPTED_ONLY=1" \
   -e "DB_URL=/db/db_v2.sqlite3" \
   --mount "type=bind,source=$PWD/db,destination=/db" \
-  rustdesk/rustdesk-server-s6:latest
+  wy368/openrustdesk-server:latest
 ```
 
 ```yaml
@@ -279,7 +279,7 @@ services:
       - 21117:21117
       - 21118:21118
       - 21119:21119
-    image: rustdesk/rustdesk-server-s6:latest
+    image: wy368/openrustdesk-server:latest
     environment:
       - "RELAY=rustdesk.example.com:21117"
       - "ENCRYPTED_ONLY=1"
@@ -311,7 +311,7 @@ You can use this command to generate a keypair:
 If you don't have (or don't want) the `rustdesk-utils` package installed on your system, you can invoke the same command with docker:
 
 ```bash
-docker run --rm --entrypoint /usr/bin/rustdesk-utils  rustdesk/rustdesk-server-s6:latest genkeypair
+docker run --rm --entrypoint /usr/bin/rustdesk-utils  wy368/openrustdesk-server:latest genkeypair
 ```
 
 The output will be something like this:
