@@ -20,6 +20,8 @@
 
 Self-host your own RustDesk server, it is free and open source.
 
+# master no  docker
+
 ## How to build manually
 
 ```bash
