@@ -48,14 +48,14 @@ Docker镜像会在每次 GitHub 发布新的release版本时自动构建。我�
 
 | 架构      | image:tag                                 |
 |---------| ----------------------------------------- |
-| amd64   | `rustdesk/rustdesk-server:latest`         |
-| arm64v8 | `rustdesk/rustdesk-server:latest-arm64v8` |
+| amd64   | `wy368/openrustdesk-server:latest`         |
+| arm64v8 | `wy368/openrustdesk-server:latest-arm64v8` |
 
 您可以使用以下命令，直接通过 ``docker run`` 來启动这些镜像：
 
 ```bash
-docker run --name hbbs --net=host -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
-docker run --name hbbr --net=host -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbr 
+docker run --name hbbs --net=host -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
+docker run --name hbbr --net=host -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbr 
 ```
 
 或不使用 `--net=host` 参数启动， 但这样 P2P 直连功能将无法工作。
@@ -63,8 +63,8 @@ docker run --name hbbr --net=host -v "$PWD/data:/root" -d rustdesk/rustdesk-serv
 对于使用了 SELinux 的系统，您需要将 ``/root`` 替换为 ``/root:z``，以保证容器的正常运行。或者，也可以通过添加参数 ``--security-opt label=disable`` 来完全禁用 SELinux 容器隔离。
 
 ```bash
-docker run --name hbbs -p 21115:21115 -p 21116:21116 -p 21116:21116/udp -p 21118:21118 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
-docker run --name hbbr -p 21117:21117 -p 21119:21119 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbr 
+docker run --name hbbs -p 21115:21115 -p 21116:21116 -p 21116:21116/udp -p 21118:21118 -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
+docker run --name hbbr -p 21117:21117 -p 21119:21119 -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbr 
 ```
 
 `relay-server-ip` 参数是运行这些容器的服务器的 IP 地址（或 DNS 名称）。如果你不想使用 **21117** 作为 `hbbr` 的服务端口,可使用可选参数 `port` 进行指定。
@@ -86,7 +86,7 @@ services:
       - 21116:21116
       - 21116:21116/udp
       - 21118:21118
-    image: rustdesk/rustdesk-server:latest
+    image: wy368/openrustdesk-server:latest
     command: hbbs -r rustdesk.example.com:21117
     volumes:
       - ./data:/root
@@ -101,7 +101,7 @@ services:
     ports:
       - 21117:21117
       - 21119:21119
-    image: rustdesk/rustdesk-server:latest
+    image: wy368/openrustdesk-server:latest
     command: hbbr
     volumes:
       - ./data:/root
