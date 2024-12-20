@@ -16,7 +16,7 @@ env:
   SSH_PRIVATE_KEY: ${{ secrets.GIT_PRIVATE_KEY }}
   RS_PUB_KEY: "${{ secrets.RS_PUB_KEY }}"
   RENDEZVOUS_SERVER: "${{ secrets.RENDEZVOUS_SERVER }}"
-  VERSION: "1.3.5" 
+  VERSION: "1.3.6" 
 
 jobs:
 
