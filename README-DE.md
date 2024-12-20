@@ -61,11 +61,11 @@ Oder ohne `--net=host`, aber die P2P-Direktverbindung kann dann nicht funktionie
 Bei Systemen, die SELinux verwenden, muss `/root` durch `/root:z` ersetzt werden, damit die Container korrekt laufen. Alternativ kann die SELinux-Containertrennung durch Hinzufügen der Option `--security-opt label=disable` vollständig deaktiviert werden.
 
 ```bash
-docker run --name hbbs -p 21115:21115 -p 21116:21116 -p 21116:21116/udp -p 21118:21118 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
-docker run --name hbbr -p 21117:21117 -p 21119:21119 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbr 
+docker run --name hbbs -p 41115:41115 -p 41116:41116 -p 41116:41116/udp -p 41118:41118 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
+docker run --name hbbr -p 41117:41117 -p 41119:41119 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbr 
 ```
 
-Der Parameter `relay-server-ip` ist die IP-Adresse (oder der DNS-Name) des Servers, auf dem diese Container laufen. Der **optionale** Parameter `port` muss verwendet werden, wenn Sie einen anderen Port als **21117** für `hbbr` verwenden.
+Der Parameter `relay-server-ip` ist die IP-Adresse (oder der DNS-Name) des Servers, auf dem diese Container laufen. Der **optionale** Parameter `port` muss verwendet werden, wenn Sie einen anderen Port als **41117** für `hbbr` verwenden.
 
 Sie können auch Docker Compose verwenden, wobei diese Konfiguration als Vorlage dient:
 
@@ -80,12 +80,12 @@ services:
   hbbs:
     container_name: hbbs
     ports:
-      - 21115:21115
-      - 21116:21116
-      - 21116:21116/udp
-      - 21118:21118
+      - 41115:41115
+      - 41116:41116
+      - 41116:41116/udp
+      - 41118:41118
     image: rustdesk/rustdesk-server:latest
-    command: hbbs -r rustdesk.example.com:21117
+    command: hbbs -r rustdesk.example.com:41117
     volumes:
       - ./data:/root
     networks:
@@ -97,8 +97,8 @@ services:
   hbbr:
     container_name: hbbr
     ports:
-      - 21117:21117
-      - 21119:21119
+      - 41117:41117
+      - 41119:41119
     image: rustdesk/rustdesk-server:latest
     command: hbbr
     volumes:
@@ -108,7 +108,7 @@ services:
     restart: unless-stopped
 ```
 
-Bearbeiten Sie Zeile 16 so, dass sie auf Ihren Relay-Server verweist (den, der am Port 21117 lauscht). Sie können auch die Zeilen für die Volumes (Zeile 18 und 33) bearbeiten, wenn Sie dies wünschen.
+Bearbeiten Sie Zeile 16 so, dass sie auf Ihren Relay-Server verweist (den, der am Port 41117 lauscht). Sie können auch die Zeilen für die Volumes (Zeile 18 und 33) bearbeiten, wenn Sie dies wünschen.
 
 (Die Anerkennung für Docker Compose geht an @lukebarone und @QuiGonLeong.)
 
@@ -152,8 +152,8 @@ oder ohne `--net=host`, aber die P2P-Direktverbindung kann dann nicht funktionie
 
 ```bash
 docker run --name rustdesk-server \
-  -p 21115:21115 -p 21116:21116 -p 21116:21116/udp \
-  -p 21117:21117 -p 21118:21118 -p 21119:21119 \
+  -p 41115:41115 -p 41116:41116 -p 41116:41116/udp \
+  -p 41117:41117 -p 41118:41118 -p 41119:41119 \
   -e "RELAY=rustdeskrelay.example.com" \
   -e "ENCRYPTED_ONLY=1" \
   -v "$PWD/data:/data" -d rustdesk/rustdesk-server-s6:latest
@@ -168,15 +168,15 @@ services:
   rustdesk-server:
     container_name: rustdesk-server
     ports:
-      - 21115:21115
-      - 21116:21116
-      - 21116:21116/udp
-      - 21117:21117
-      - 21118:21118
-      - 21119:21119
+      - 41115:41115
+      - 41116:41116
+      - 41116:41116/udp
+      - 41117:41117
+      - 41118:41118
+      - 41119:41119
     image: rustdesk/rustdesk-server-s6:latest
     environment:
-      - "RELAY=rustdesk.example.com:21117"
+      - "RELAY=rustdesk.example.com:41117"
       - "ENCRYPTED_ONLY=1"
     volumes:
       - ./data:/data
@@ -222,15 +222,15 @@ services:
   rustdesk-server:
     container_name: rustdesk-server
     ports:
-      - 21115:21115
-      - 21116:21116
-      - 21116:21116/udp
-      - 21117:21117
-      - 21118:21118
-      - 21119:21119
+      - 41115:41115
+      - 41116:41116
+      - 41116:41116/udp
+      - 41117:41117
+      - 41118:41118
+      - 41119:41119
     image: rustdesk/rustdesk-server-s6:latest
     environment:
-      - "RELAY=rustdesk.example.com:21117"
+      - "RELAY=rustdesk.example.com:41117"
       - "ENCRYPTED_ONLY=1"
       - "DB_URL=/db/db_v2.sqlite3"
       - "KEY_PRIV=FR2j78IxfwJNR+HjLluQ2Nh7eEryEeIZCwiQDPVe+PaITKyShphHAsPLn7So0OqRs92nGvSRdFJnE2MSyrKTIQ=="
@@ -266,15 +266,15 @@ services:
   rustdesk-server:
     container_name: rustdesk-server
     ports:
-      - 21115:21115
-      - 21116:21116
-      - 21116:21116/udp
-      - 21117:21117
-      - 21118:21118
-      - 21119:21119
+      - 41115:41115
+      - 41116:41116
+      - 41116:41116/udp
+      - 41117:41117
+      - 41118:41118
+      - 41119:41119
     image: rustdesk/rustdesk-server-s6:latest
     environment:
-      - "RELAY=rustdesk.example.com:21117"
+      - "RELAY=rustdesk.example.com:41117"
       - "ENCRYPTED_ONLY=1"
       - "DB_URL=/db/db_v2.sqlite3"
     volumes:
@@ -338,7 +338,7 @@ Sie können die Variablen wie üblich angeben oder eine `.env`-Datei verwenden.
 | DOWNGRADE_THRESHOLD | hbbr | Schwellenwert der Downgrade-Prüfung (Bit/ms)) |
 | KEY | hbbs/hbbr | Wenn gesetzt, wird die Verwendung eines bestimmten Schlüssels erzwungen. Wenn auf **_** gesetzt, wird die Verwendung eines beliebigen Schlüssels erzwungen. |
 | LIMIT_SPEED | hbbr | Höchstgeschwindigkeit (in Mb/s) |
-| PORT | hbbs/hbbr | Lauschender Port (21116 für hbbs - 21117 für hbbr) |
+| PORT | hbbs/hbbr | Lauschender Port (41116 für hbbs - 41117 für hbbr) |
 | RELAY_SERVERS | hbbs | IP-Adresse/DNS-Name der Rechner, auf denen hbbr läuft (durch Komma getrennt) |
 | RUST_LOG | all | Debug-Level einstellen (error\|warn\|info\|debug\|trace) |
 | SINGLE_BANDWIDTH | hbbr | Maximale Bandbreite für eine einzelne Verbindung (in Mb/s) |
