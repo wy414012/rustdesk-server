@@ -1,332 +1,69 @@
-<p align="center">
-  <a href="#how-to-build-manually">Manually</a> •
-  <a href="#docker-images">Docker</a> •
-  <a href="#s6-overlay-based-images">S6-overlay</a> •
-  <a href="#how-to-create-a-keypair">Keypair</a> •
-  <a href="#deb-packages">Debian</a> •
-  <a href="#env-variables">Variables</a><br>
-  [<a href="README-DE.md">Deutsch</a>] | [<a href="README-NL.md">Nederlands</a>] | [<a href="README-TW.md">繁體中文</a>] | [<a href="README-ZH.md">简体中文</a>]<br>
-</p>
+# RustDesk 服务器程序文档
 
-# RustDesk Server Program
+- 本仓库代码支持三方api服务器
+- 推荐使用https://github.com/lejianwen/rustdesk-api
 
-[![build](https://github.com/rustdesk/rustdesk-server/actions/workflows/build.yaml/badge.svg)](https://github.com/rustdesk/rustdesk-server/actions/workflows/build.yaml)
+#### 目录
+- [如何手动构建](#如何手动构建)
+- [如何创建密钥对](#如何创建密钥对)
+- [Debian 包](#debian-包)
+- [环境变量](#环境变量)
 
-[**Download**](https://github.com/rustdesk/rustdesk-server/releases)
+#### RustDesk 服务器程序
 
-[**Manual**](https://rustdesk.com/docs/en/self-host/)
+[![构建状态](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml/badge.svg)](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml)
 
-[**FAQ**](https://github.com/rustdesk/rustdesk/wiki/FAQ)
+[**下载**](https://github.com/wy414012/rustdesk-server/releases)
 
-Self-host your own RustDesk server, it is free and open source.
+[**手册**](https://rustdesk.com/docs/en/self-host/)
 
-# master no  docker
+[**常见问题**](https://github.com/rustdesk/rustdesk/wiki/FAQ)
 
-## How to build manually
+自建你自己的 RustDesk 服务器，它是免费且开源的。
+
+#### master 分支无 Docker
+
+##### 如何手动构建
 
 ```bash
 cargo build --release
 ```
 
-Three executables will be generated in target/release.
+在 `target/release` 目录下将生成三个可执行文件：
 
-- hbbs - RustDesk ID/Rendezvous server
-- hbbr - RustDesk relay server
-- rustdesk-utils - RustDesk CLI utilities
+- `hbbs` - RustDesk ID/会面服务器
+- `hbbr` - RustDesk 中继服务器
+- `rustdesk-utils` - RustDesk 命令行工具
 
-You can find updated binaries on the [Releases](https://github.com/rustdesk/rustdesk-server/releases) page.
+你可以在 [Releases](https://github.com/wy414012/rustdesk-server/releases) 页面找到更新的二进制文件。
 
-If you want extra features, [RustDesk Server Pro](https://rustdesk.com/pricing.html) might suit you better.
+##### 如何创建密钥对
 
-If you want to develop your own server, [rustdesk-server-demo](https://github.com/rustdesk/rustdesk-server-demo) might be a better and simpler start for you than this repo.
+需要一个密钥对用于加密；你可以提供它，如前所述，但你需要一种方法来创建一个。
 
-## Docker images
-
-Docker images are automatically generated and published to [Docker Hub](https://hub.docker.com/r/rustdesk) and [GitHub Container Registry](https://github.com/rustdesk?tab=packages&repo_name=rustdesk-server) on every GitHub release. We have 2 kind of images.
-
-### Classic image
-
-These images are built from scratch with two main binaries (`hbbs` and `hbbr`). They're available on [Docker Hub](https://hub.docker.com/r/rustdesk/rustdesk-server/) and [GitHub Container Registry](https://github.com/rustdesk/rustdesk-server/pkgs/container/rustdesk-server) with these architectures:
-
-* amd64
-* arm64v8
-* armv7
-
-You could use `latest` tag or major version tag `1` with supported architectures:
-
-| Version       | image:tag                         |
-| ------------- | --------------------------------- |
-| latest        | `rustdesk/rustdesk-server:latest` |
-| Major version | `rustdesk/rustdesk-server:1`      |
-
-
-You can start these images directly with `docker run` with these commands:
-
-```bash
-docker run --name hbbs --net=host -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
-docker run --name hbbr --net=host -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbr 
-```
-
-or without `--net=host`, but P2P direct connection can not work.
-
-For systems using SELinux, replacing `/root` by `/root:z` is required for the containers to run correctly. Alternatively, SELinux container separation can be disabled completely adding the option `--security-opt label=disable`.
-
-```bash
-docker run --name hbbs -p 41115:41115 -p 41116:41116 -p 41116:41116/udp -p 41118:41118 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
-docker run --name hbbr -p 41117:41117 -p 41119:41119 -v "$PWD/data:/root" -d rustdesk/rustdesk-server:latest hbbr 
-```
-
-The `relay-server-ip` parameter is the IP address (or dns name) of the server running these containers. The **optional** `port` parameter has to be used if you use a port different than **41117** for `hbbr`.
-
-You can also use docker-compose, using this configuration as a template:
-
-```yaml
-version: '3'
-
-networks:
-  rustdesk-net:
-    external: false
-
-services:
-  hbbs:
-    container_name: hbbs
-    ports:
-      - 41115:41115
-      - 41116:41116
-      - 41116:41116/udp
-      - 41118:41118
-    image: rustdesk/rustdesk-server:latest
-    command: hbbs -r rustdesk.example.com:41117
-    volumes:
-      - ./data:/root
-    networks:
-      - rustdesk-net
-    depends_on:
-      - hbbr
-    restart: unless-stopped
-
-  hbbr:
-    container_name: hbbr
-    ports:
-      - 41117:41117
-      - 41119:41119
-    image: rustdesk/rustdesk-server:latest
-    command: hbbr
-    volumes:
-      - ./data:/root
-    networks:
-      - rustdesk-net
-    restart: unless-stopped
-```
-
-Edit line 16 to point to your relay server (the one listening on port 41117). You can also edit the volume lines (line 18 and line 33) if you need.
-
-(docker-compose credit goes to @lukebarone and @QuiGonLeong)
-
-> [!NOTE]  
-> The rustdesk/rustdesk-server:latest in China may be replaced with the latest version number on Docker Hub, such as `rustdesk-server:1.1.10-3`. Otherwise, the old version may be pulled due to image acceleration.
-
-> [!NOTE]  
-> If you are experiencing issues pulling from Docker Hub, try pulling from the [GitHub Container Registry](https://github.com/rustdesk/rustdesk-server/pkgs/container/rustdesk-server) instead.
-
-## S6-overlay based images
-
-These images are build against `busybox:stable` with the addition of the binaries (both `hbbs` and `hbbr`) and [S6-overlay](https://github.com/just-containers/s6-overlay). They're available on [Docker hub](https://hub.docker.com/r/rustdesk/rustdesk-server-s6/) and [GitHub Container Registry](https://github.com/rustdesk/rustdesk-server/pkgs/container/rustdesk-server) with these architectures:
-
-* amd64
-* i386
-* arm64v8
-* armv7
-
-You could use `latest` tag or major version tag `1` with supported architectures:
-
-| Version       | image:tag                            |
-| ------------- | ------------------------------------ |
-| latest        | `rustdesk/rustdesk-server-s6:latest` |
-| Major version | `rustdesk/rustdesk-server-s6:1`      |
-
-The S6-overlay acts as a supervisor and keeps both process running, so with this image, there's no need to have two separate running containers.
-
-You can start these images directly with `docker run` with this command:
-
-```bash
-docker run --name rustdesk-server \ 
-  --net=host \
-  -e "RELAY=rustdeskrelay.example.com" \
-  -e "ENCRYPTED_ONLY=1" \
-  -v "$PWD/data:/data" -d rustdesk/rustdesk-server-s6:latest
-```
-
-or without `--net=host`, but P2P direct connection cannot work.
-
-```bash
-docker run --name rustdesk-server \
-  -p 41115:41115 -p 41116:41116 -p 41116:41116/udp \
-  -p 41117:41117 -p 41118:41118 -p 41119:41119 \
-  -e "RELAY=rustdeskrelay.example.com" \
-  -e "ENCRYPTED_ONLY=1" \
-  -v "$PWD/data:/data" -d rustdesk/rustdesk-server-s6:latest
-```
-
-Or you can use a docker-compose file:
-
-```yaml
-version: '3'
-
-services:
-  rustdesk-server:
-    container_name: rustdesk-server
-    ports:
-      - 41115:41115
-      - 41116:41116
-      - 41116:41116/udp
-      - 41117:41117
-      - 41118:41118
-      - 41119:41119
-    image: rustdesk/rustdesk-server-s6:latest
-    environment:
-      - "RELAY=rustdesk.example.com:41117"
-      - "ENCRYPTED_ONLY=1"
-    volumes:
-      - ./data:/data
-    restart: unless-stopped
-```
-
-For this container image, you can use these environment variables, **in addition** to the ones specified in the following **ENV variables** section:
-
-| variable | optional | description |
-| --- | --- | --- |
-| RELAY | no | the IP address/DNS name of the machine running this container |
-| ENCRYPTED_ONLY | yes | if set to **"1"** unencrypted connection will not be accepted |
-| KEY_PUB | yes | public part of the key pair |
-| KEY_PRIV | yes | private part of the key pair |
-
-### Secret management in S6-overlay based images
-
-You can obviously keep the key pair in a docker volume, but the best practices tells you to not write the keys on the filesystem; so we provide a couple of options.
-
-On container startup, the presence of the keypair is checked (`/data/id_ed25519.pub` and `/data/id_ed25519`) and if one of these keys doesn't exist, it's recreated from ENV variables or docker secrets.
-Then the validity of the keypair is checked: if public and private keys doesn't match, the container will stop.
-If you provide no keys, `hbbs` will generate one for you, and it'll place it in the default location.
-
-#### Use ENV to store the key pair
-
-You can use docker environment variables to store the keys. Just follow this examples:
-
-```bash
-docker run --name rustdesk-server \ 
-  --net=host \
-  -e "RELAY=rustdeskrelay.example.com" \
-  -e "ENCRYPTED_ONLY=1" \
-  -e "DB_URL=/db/db_v2.sqlite3" \
-  -e "KEY_PRIV=FR2j78IxfwJNR+HjLluQ2Nh7eEryEeIZCwiQDPVe+PaITKyShphHAsPLn7So0OqRs92nGvSRdFJnE2MSyrKTIQ==" \
-  -e "KEY_PUB=iEyskoaYRwLDy5+0qNDqkbPdpxr0kXRSZxNjEsqykyE=" \
-  -v "$PWD/db:/db" -d rustdesk/rustdesk-server-s6:latest
-```
-
-```yaml
-version: '3'
-
-services:
-  rustdesk-server:
-    container_name: rustdesk-server
-    ports:
-      - 41115:41115
-      - 41116:41116
-      - 41116:41116/udp
-      - 41117:41117
-      - 41118:41118
-      - 41119:41119
-    image: rustdesk/rustdesk-server-s6:latest
-    environment:
-      - "RELAY=rustdesk.example.com:41117"
-      - "ENCRYPTED_ONLY=1"
-      - "DB_URL=/db/db_v2.sqlite3"
-      - "KEY_PRIV=FR2j78IxfwJNR+HjLluQ2Nh7eEryEeIZCwiQDPVe+PaITKyShphHAsPLn7So0OqRs92nGvSRdFJnE2MSyrKTIQ=="
-      - "KEY_PUB=iEyskoaYRwLDy5+0qNDqkbPdpxr0kXRSZxNjEsqykyE="
-    volumes:
-      - ./db:/db
-    restart: unless-stopped
-```
-
-#### Use Docker secrets to store the key pair
-
-You can alternatively use docker secrets to store the keys.
-This is useful if you're using **docker-compose** or **Docker Swarm**.
-Just follow this examples:
-
-```bash
-cat secrets/id_ed25519.pub | docker secret create key_pub -
-cat secrets/id_ed25519 | docker secret create key_priv -
-docker service create --name rustdesk-server \
-  --secret key_priv --secret key_pub \
-  --net=host \
-  -e "RELAY=rustdeskrelay.example.com" \
-  -e "ENCRYPTED_ONLY=1" \
-  -e "DB_URL=/db/db_v2.sqlite3" \
-  --mount "type=bind,source=$PWD/db,destination=/db" \
-  rustdesk/rustdesk-server-s6:latest
-```
-
-```yaml
-version: '3'
-
-services:
-  rustdesk-server:
-    container_name: rustdesk-server
-    ports:
-      - 41115:41115
-      - 41116:41116
-      - 41116:41116/udp
-      - 41117:41117
-      - 41118:41118
-      - 41119:41119
-    image: rustdesk/rustdesk-server-s6:latest
-    environment:
-      - "RELAY=rustdesk.example.com:41117"
-      - "ENCRYPTED_ONLY=1"
-      - "DB_URL=/db/db_v2.sqlite3"
-    volumes:
-      - ./db:/db
-    restart: unless-stopped
-    secrets:
-      - key_pub
-      - key_priv
-
-secrets:
-  key_pub:
-    file: secrets/id_ed25519.pub
-  key_priv:
-    file: secrets/id_ed25519      
-```
-
-## How to create a keypair
-
-A keypair is needed for encryption; you can provide it, as explained before, but you need a way to create one.
-
-You can use this command to generate a keypair:
+你可以使用以下命令生成密钥对：
 
 ```bash
 /usr/bin/rustdesk-utils genkeypair
 ```
 
-If you don't have (or don't want) the `rustdesk-utils` package installed on your system, you can invoke the same command with docker:
+如果你没有安装（或不想安装）`rustdesk-utils` 包，你可以使用 Docker 运行相同的命令：
 
 ```bash
-docker run --rm --entrypoint /usr/bin/rustdesk-utils  rustdesk/rustdesk-server-s6:latest genkeypair
+docker run --rm --entrypoint /usr/bin/rustdesk-utils wy368/openrustdesk-server:latest genkeypair
 ```
 
-The output will be something like this:
+输出结果如下：
 
 ```text
-Public Key:  8BLLhtzUBU/XKAH4mep3p+IX4DSApe7qbAwNH9nv4yA=
-Secret Key:  egAVd44u33ZEUIDTtksGcHeVeAwywarEdHmf99KM5ajwEsuG3NQFT9coAfiZ6nen4hfgNICl7upsDA0f2e/jIA==
+公钥: 8BLLhtzUBU/XKAH4mep3p+IX4DSApe7qbAwNH9nv4yA=
+私钥: egAVd44u33ZEUIDTtksGcHeVeAwywarEdHmf99KM5ajwEsuG3NQFT9coAfiZ6nen4hfgNICl7upsDA0f2e/jIA==
 ```
 
-## .deb packages
+##### .deb 包
 
-Separate .deb packages are available for each binary, you can find them in the [Releases](https://github.com/rustdesk/rustdesk-server/releases).
-These packages are meant for the following distributions:
+每个二进制文件都有单独的 .deb 包，你可以在 [Releases](https://github.com/wy414012/rustdesk-server/releases) 页面找到它们。
+这些包适用于以下发行版：
 
 - Ubuntu 24.04 LTS
 - Ubuntu 22.04 LTS
@@ -336,21 +73,20 @@ These packages are meant for the following distributions:
 - Debian 11 bullseye
 - Debian 10 buster
 
-## ENV variables
+##### 环境变量
 
-`hbbs` and `hbbr` can be configured using these ENV variables.
-You can specify the variables as usual or use an `.env` file.
+`hbbs` 和 `hbbr` 可以通过以下环境变量进行配置。你可以像往常一样指定这些变量，或者使用 `.env` 文件。
 
-| variable | binary | description |
+| 变量名 | 适用二进制文件 | 描述 |
 | --- | --- | --- |
-| ALWAYS_USE_RELAY | hbbs | if set to **"Y"** disallows direct peer connection |
-| DB_URL | hbbs | path for database file |
-| DOWNGRADE_START_CHECK | hbbr | delay (in seconds) before downgrade check |
-| DOWNGRADE_THRESHOLD | hbbr | threshold of downgrade check (bit/ms) |
-| KEY | hbbs/hbbr | if set force the use of a specific key, if set to **"_"** force the use of any key |
-| LIMIT_SPEED | hbbr | speed limit (in Mb/s) |
-| PORT | hbbs/hbbr | listening port (41116 for hbbs - 41117 for hbbr) |
-| RELAY | hbbs | IP address/DNS name of the machines running hbbr (separated by comma) |
-| RUST_LOG | all | set debug level (error\|warn\|info\|debug\|trace) |
-| SINGLE_BANDWIDTH | hbbr | max bandwidth for a single connection (in Mb/s) |
-| TOTAL_BANDWIDTH | hbbr | max total bandwidth (in Mb/s) |
+| ALWAYS_USE_RELAY | hbbs | 如果设置为 **"Y"**，则禁止直接对等连接 |
+| DB_URL | hbbs | 数据库文件路径 |
+| DOWNGRADE_START_CHECK | hbbr | 下降检查延迟（秒） |
+| DOWNGRADE_THRESHOLD | hbbr | 下降检查阈值（bit/ms） |
+| KEY | hbbs/hbbr | 如果设置，则强制使用特定密钥；如果设置为 **"_"**，则强制使用任何密钥 |
+| LIMIT_SPEED | hbbr | 速度限制（Mb/s） |
+| PORT | hbbs/hbbr | 监听端口（hbbs 为 41116，hbbr 为 41117） |
+| RELAY | hbbs | 运行 hbbr 的机器的 IP 地址/DNS 名称（用逗号分隔） |
+| RUST_LOG | 所有 | 设置调试级别（error\|warn\|info\|debug\|trace） |
+| SINGLE_BANDWIDTH | hbbr | 单个连接的最大带宽（Mb/s） |
+| TOTAL_BANDWIDTH | hbbr | 总最大带宽（Mb/s） |
