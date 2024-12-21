@@ -1,4 +1,4 @@
-# RustDesk 服务器程序文档
+# Open RustDesk 服务器程序文档
 
 - 本仓库代码支持三方api服务器
 - 推荐使用https://github.com/lejianwen/rustdesk-api
@@ -86,7 +86,8 @@ docker run --rm --entrypoint /usr/bin/rustdesk-utils wy368/openrustdesk-server:l
 | KEY | hbbs/hbbr | 如果设置，则强制使用特定密钥；如果设置为 **"_"**，则强制使用任何密钥 |
 | LIMIT_SPEED | hbbr | 速度限制（Mb/s） |
 | PORT | hbbs/hbbr | 监听端口（hbbs 为 41116，hbbr 为 41117） |
-| RELAY | hbbs | 运行 hbbr 的机器的 IP 地址/DNS 名称（用逗号分隔） |
+| RELAY_SERVERS | hbbs | 运行中继 hbbr 的机器的 IP地址或者，用逗号分隔可以指定多个 |
+| RENDZVOUS_SERVERS | hbbs | 运行会面 hbbs 的机器的 IP地址或者，用逗号分隔可以指定多个 |
 | RUST_LOG | 所有 | 设置调试级别（error\|warn\|info\|debug\|trace） |
 | SINGLE_BANDWIDTH | hbbr | 单个连接的最大带宽（Mb/s） |
 | TOTAL_BANDWIDTH | hbbr | 总最大带宽（Mb/s） |

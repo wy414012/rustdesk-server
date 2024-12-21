@@ -725,7 +725,7 @@ impl Config {
         }
         let serial_obsolute = CONFIG2.read().unwrap().serial > SERIAL;
         if serial_obsolute {
-            let ss: Vec<String> = Self::get_option("rendezvous-servers")
+            let ss: Vec<String> = Self::get_option("RENDZVOUS_SERVERS")
                 .split(',')
                 .filter(|x| x.contains('.'))
                 .map(|x| x.to_owned())
