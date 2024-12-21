@@ -10,9 +10,9 @@
 
 # RustDesk Server Program
 
-[![build](https://github.com/rustdesk/rustdesk-server/actions/workflows/build.yaml/badge.svg)](https://github.com/rustdesk/rustdesk-server/actions/workflows/build.yaml)
+[![build](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml/badge.svg)](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml)
 
-[**Download**](https://github.com/rustdesk/rustdesk-server/releases)
+[**Download**](https://github.com/wy414012/rustdesk-server/releases)
 
 [**Manual**](https://rustdesk.com/docs/en/self-host/)
 
