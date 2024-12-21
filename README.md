@@ -1,82 +1,71 @@
-<p align="center">
-  <a href="#how-to-build-manually">Manually</a> •
-  <a href="#docker-images">Docker</a> •
-  <a href="#s6-overlay-based-images">S6-overlay</a> •
-  <a href="#how-to-create-a-keypair">Keypair</a> •
-  <a href="#deb-packages">Debian</a> •
-  <a href="#env-variables">Variables</a><br>
-  [<a href="README-DE.md">Deutsch</a>] | [<a href="README-NL.md">Nederlands</a>] | [<a href="README-TW.md">繁體中文</a>] | [<a href="README-ZH.md">简体中文</a>]<br>
-</p>
-
 # OpenRustDesk Server
 
-[![build](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml/badge.svg)](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml)
+[![构建](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml/badge.svg)](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml)
 
-[**Download**](https://github.com/wy414012/rustdesk-server/releases)
+[**下载**](https://github.com/wy414012/rustdesk-server/releases)
 
-[**Manual**](https://rustdesk.com/docs/en/self-host/)
+[**手册**](https://rustdesk.com/docs/en/self-host/)
 
-[**FAQ**](https://github.com/rustdesk/rustdesk/wiki/FAQ)
+[**常见问题**](https://github.com/rustdesk/rustdesk/wiki/FAQ)
 
-Self-host your own RustDesk server, it is free and open source.
+自托管您自己的 RustDesk 服务器，它是免费和开源的。
 
-## How to build manually
+## 如何手动构建
 
 ```bash
 cargo build --release
 ```
 
-Three executables will be generated in target/release.
+在 `target/release` 目录下会生成三个可执行文件：
 
-- hbbs - RustDesk ID/Rendezvous server
-- hbbr - RustDesk relay server
-- rustdesk-utils - RustDesk CLI utilities
+- hbbs - RustDesk ID/会面服务器
+- hbbr - RustDesk 中继服务器
+- rustdesk-utils - RustDesk 命令行工具
 
-You can find updated binaries on the [Releases](https://github.com/rustdesk/rustdesk-server/releases) page.
+您可以在 [Releases](https://github.com/wy414012/rustdesk-server/releases) 页面找到更新的二进制文件。
 
-If you want extra features, [RustDesk Server Pro](https://rustdesk.com/pricing.html) might suit you better.
+如果您需要额外功能，[RustDesk Server Pro](https://rustdesk.com/pricing.html) 可能更适合您。
 
-If you want to develop your own server, [rustdesk-server-demo](https://github.com/rustdesk/rustdesk-server-demo) might be a better and simpler start for you than this repo.
+如果您想开发自己的服务器，[rustdesk-server-demo](https://github.com/rustdesk/rustdesk-server-demo) 可能是比这个仓库更好的起点。
 
-## Docker images
+## Docker 镜像
 
-Docker images are automatically generated and published to [Docker Hub](https://hub.docker.com/r/rustdesk) and [GitHub Container Registry](https://github.com/rustdesk?tab=packages&repo_name=rustdesk-server) on every GitHub release. We have 2 kind of images.
+Docker 镜像是在每次 GitHub 发布时自动构建并发布到 [Docker Hub](https://hub.docker.com/r/wy368/openrustdesk-server/) 和 [GitHub Container Registry](https://github.com/wy414012?tab=packages&repo_name=rustdesk-server)。我们有两种类型的镜像。
 
-### Classic image
+### 经典镜像
 
-These images are built from scratch with two main binaries (`hbbs` and `hbbr`). They're available on [Docker Hub](https://hub.docker.com/r/rustdesk/rustdesk-server/) and [GitHub Container Registry](https://github.com/rustdesk/rustdesk-server/pkgs/container/rustdesk-server) with these architectures:
+这些镜像是从头开始构建的，包含两个主要的二进制文件（`hbbs` 和 `hbbr`）。它们可以在 [Docker Hub](https://hub.docker.com/r/wy368/openrustdesk-server/) 和 [GitHub Container Registry](https://github.com/wy414012/rustdesk-server/pkgs/container/rustdesk-server) 上找到，支持以下架构：
 
 * amd64
 * arm64v8
 * armv7
 
-You could use `latest` tag or major version tag `1` with supported architectures:
+您可以使用 `latest` 标签或主版本标签 `1` 来获取支持的架构：
 
-| Version       | image:tag                         |
+| 版本       | image:tag                         |
 | ------------- | --------------------------------- |
 | latest        | `wy368/openrustdesk-server:latest` |
-| Major version | `wy368/openrustdesk-server:1`      |
+| 主版本 | `wy368/openrustdesk-server:1`      |
 
-
-You can start these images directly with `docker run` with these commands:
+您可以直接使用 `docker run` 启动这些镜像，命令如下：
 
 ```bash
-docker run --name hbbs --net=host -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
+docker run --name hbbs --net=host -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbs -r <中继服务器IP[:端口]> 
 docker run --name hbbr --net=host -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbr 
 ```
 
-or without `--net=host`, but P2P direct connection can not work.
+或者不使用 `--net=host`，但 P2P 直接连接将无法工作。
 
-For systems using SELinux, replacing `/root` by `/root:z` is required for the containers to run correctly. Alternatively, SELinux container separation can be disabled completely adding the option `--security-opt label=disable`.
+对于使用 SELinux 的系统，需要将 `/root` 替换为 `/root:z` 以确保容器正确运行。或者可以禁用 SELinux 容器隔离，添加选项 `--security-opt label=disable`。
 
 ```bash
-docker run --name hbbs -p 21115:21115 -p 21116:21116 -p 21116:21116/udp -p 21118:21118 -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbs -r <relay-server-ip[:port]> 
+docker run --name hbbs -p 21115:21115 -p 21116:21116 -p 21116:21116/udp -p 21118:21118 -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbs -r <中继服务器IP[:端口]> 
 docker run --name hbbr -p 21117:21117 -p 21119:21119 -v "$PWD/data:/root" -d wy368/openrustdesk-server:latest hbbr 
 ```
 
-The `relay-server-ip` parameter is the IP address (or dns name) of the server running these containers. The **optional** `port` parameter has to be used if you use a port different than **21117** for `hbbr`.
+`relay-server-ip` 参数是运行这些容器的服务器的 IP 地址（或 DNS 名称）。可选的 `port` 参数用于当您使用不同于 **21117** 的端口时。
 
-You can also use docker-compose, using this configuration as a template:
+您也可以使用 docker-compose，使用此配置作为模板：
 
 ```yaml
 version: '3'
@@ -117,35 +106,32 @@ services:
     restart: unless-stopped
 ```
 
-Edit line 16 to point to your relay server (the one listening on port 21117). You can also edit the volume lines (line 18 and line 33) if you need.
+编辑第 16 行以指向您的中继服务器（监听端口 21117）。如果需要，您还可以编辑卷行（第 18 行和第 33 行）。
 
-(docker-compose credit goes to @lukebarone and @QuiGonLeong)
+(docker-compose 模板由 @lukebarone 和 @QuiGonLeong 提供)
 
-> [!NOTE]  
-> The wy368/openrustdesk-server:latest in China may be replaced with the latest version number on Docker Hub, such as `rustdesk-server:1.1.10-3`. Otherwise, the old version may be pulled due to image acceleration.
+> [!注意]  
+> 在中国，`wy368/openrustdesk-server:latest` 可能需要替换为 Docker Hub 上的最新版本号，例如 `rustdesk-server:1.3.6`。否则，由于镜像加速的原因，可能会拉取旧版本。
 
-> [!NOTE]  
-> If you are experiencing issues pulling from Docker Hub, try pulling from the [GitHub Container Registry](https://github.com/rustdesk/rustdesk-server/pkgs/container/rustdesk-server) instead.
+> [!注意]  
+> 如果您在从 Docker Hub 拉取时遇到问题，请尝试从 [GitHub Container Registry](https://github.com/wy414012/rustdesk-server/pkgs/container/rustdesk-server) 拉取。
 
-## S6-overlay based images
+## 基于 S6-overlay 的镜像
 
-These images are build against `busybox:stable` with the addition of the binaries (both `hbbs` and `hbbr`) and [S6-overlay](https://github.com/just-containers/s6-overlay). They're available on [Docker hub](https://hub.docker.com/r/rustdesk/rustdesk-server-s6/) and [GitHub Container Registry](https://github.com/rustdesk/rustdesk-server/pkgs/container/rustdesk-server) with these architectures:
+这些镜像是基于 `busybox:stable` 构建的，并添加了二进制文件（`hbbs` 和 `hbbr`）和 [S6-overlay](https://github.com/just-containers/s6-overlay)。它们可以在 [GitHub Container Registry](https://github.com/wy414012/rustdesk-server/pkgs/container/rustdesk-server) 上找到，支持以下架构：
 
 * amd64
 * i386
 * arm64v8
 * armv7
 
-You could use `latest` tag or major version tag `1` with supported architectures:
+您可以使用 `latest` 标签或主版本标签 `1` 来获取支持的架构：
 
-| Version       | image:tag                            |
+| 版本       | image:tag                            |
 | ------------- | ------------------------------------ |
 | latest        | `wy368/openrustdesk-server:latest` |
-| Major version | `rustdesk/rustdesk-server-s6:1`      |
 
-The S6-overlay acts as a supervisor and keeps both process running, so with this image, there's no need to have two separate running containers.
-
-You can start these images directly with `docker run` with this command:
+您可以直接使用 `docker run` 启动这些镜像，命令如下：
 
 ```bash
 docker run --name rustdesk-server \ 
@@ -155,7 +141,7 @@ docker run --name rustdesk-server \
   -v "$PWD/data:/data" -d wy368/openrustdesk-server:latest
 ```
 
-or without `--net=host`, but P2P direct connection cannot work.
+或者不使用 `--net=host`，但 P2P 直接连接将无法工作。
 
 ```bash
 docker run --name rustdesk-server \
@@ -166,7 +152,7 @@ docker run --name rustdesk-server \
   -v "$PWD/data:/data" -d wy368/openrustdesk-server:latest
 ```
 
-Or you can use a docker-compose file:
+或者您可以使用 docker-compose 文件：
 
 ```yaml
 version: '3'
@@ -190,26 +176,26 @@ services:
     restart: unless-stopped
 ```
 
-For this container image, you can use these environment variables, **in addition** to the ones specified in the following **ENV variables** section:
+对于此容器镜像，除了以下 **环境变量** 部分指定的变量外，您还可以使用这些环境变量：
 
-| variable | optional | description |
+| 变量 | 是否可选 | 描述 |
 | --- | --- | --- |
-| RELAY | no | the IP address/DNS name of the machine running this container |
-| ENCRYPTED_ONLY | yes | if set to **"1"** unencrypted connection will not be accepted |
-| KEY_PUB | yes | public part of the key pair |
-| KEY_PRIV | yes | private part of the key pair |
+| RELAY | 否 | 运行此容器的机器的 IP 地址/DNS 名称 |
+| ENCRYPTED_ONLY | 是 | 如果设置为 **"1"**，则不允许未加密连接 |
+| KEY_PUB | 是 | 密钥对的公钥部分 |
+| KEY_PRIV | 是 | 密钥对的私钥部分 |
 
-### Secret management in S6-overlay based images
+### S6-overlay 基础镜像中的密钥管理
 
-You can obviously keep the key pair in a docker volume, but the best practices tells you to not write the keys on the filesystem; so we provide a couple of options.
+您可以将密钥对保存在 docker 卷中，但最佳实践建议不要将密钥写入文件系统；因此我们提供了几个选项。
 
-On container startup, the presence of the keypair is checked (`/data/id_ed25519.pub` and `/data/id_ed25519`) and if one of these keys doesn't exist, it's recreated from ENV variables or docker secrets.
-Then the validity of the keypair is checked: if public and private keys doesn't match, the container will stop.
-If you provide no keys, `hbbs` will generate one for you, and it'll place it in the default location.
+在容器启动时，会检查密钥对的存在（`/data/id_ed25519.pub` 和 `/data/id_ed25519`），如果其中一个密钥不存在，则会从环境变量或 docker 秘密中重新创建。
+然后会检查密钥对的有效性：如果公钥和私钥不匹配，容器将停止。
+如果您没有提供密钥，`hbbs` 将为您生成一个，并将其放置在默认位置。
 
-#### Use ENV to store the key pair
+#### 使用环境变量存储密钥对
 
-You can use docker environment variables to store the keys. Just follow this examples:
+您可以使用 docker 环境变量来存储密钥。请参考以下示例：
 
 ```bash
 docker run --name rustdesk-server \ 
@@ -247,11 +233,11 @@ services:
     restart: unless-stopped
 ```
 
-#### Use Docker secrets to store the key pair
+#### 使用 Docker 秘密存储密钥对
 
-You can alternatively use docker secrets to store the keys.
-This is useful if you're using **docker-compose** or **Docker Swarm**.
-Just follow this examples:
+您也可以使用 docker 秘密来存储密钥。
+这对于使用 **docker-compose** 或 **Docker Swarm** 的情况非常有用。
+请参考以下示例：
 
 ```bash
 cat secrets/id_ed25519.pub | docker secret create key_pub -
@@ -298,33 +284,33 @@ secrets:
     file: secrets/id_ed25519      
 ```
 
-## How to create a keypair
+## 如何创建密钥对
 
-A keypair is needed for encryption; you can provide it, as explained before, but you need a way to create one.
+密钥对用于加密；您可以按前面所述提供它，但您需要一种方法来创建它。
 
-You can use this command to generate a keypair:
+您可以使用以下命令生成密钥对：
 
 ```bash
 /usr/bin/rustdesk-utils genkeypair
 ```
 
-If you don't have (or don't want) the `rustdesk-utils` package installed on your system, you can invoke the same command with docker:
+如果您没有安装 `rustdesk-utils` 包或不想安装，可以使用 docker 执行相同命令：
 
 ```bash
 docker run --rm --entrypoint /usr/bin/rustdesk-utils  wy368/openrustdesk-server:latest genkeypair
 ```
 
-The output will be something like this:
+输出将类似于以下内容：
 
 ```text
-Public Key:  8BLLhtzUBU/XKAH4mep3p+IX4DSApe7qbAwNH9nv4yA=
-Secret Key:  egAVd44u33ZEUIDTtksGcHeVeAwywarEdHmf99KM5ajwEsuG3NQFT9coAfiZ6nen4hfgNICl7upsDA0f2e/jIA==
+公钥:  8BLLhtzUBU/XKAH4mep3p+IX4DSApe7qbAwNH9nv4yA=
+私钥:  egAVd44u33ZEUIDTtksGcHeVeAwywarEdHmf99KM5ajwEsuG3NQFT9coAfiZ6nen4hfgNICl7upsDA0f2e/jIA==
 ```
 
-## .deb packages
+## .deb 包
 
-Separate .deb packages are available for each binary, you can find them in the [Releases](https://github.com/rustdesk/rustdesk-server/releases).
-These packages are meant for the following distributions:
+每个二进制文件都有单独的 .deb 包，您可以在 [Releases](https://github.com/wy414012/rustdesk-server/releases) 中找到它们。
+这些包适用于以下发行版：
 
 - Ubuntu 24.04 LTS
 - Ubuntu 22.04 LTS
@@ -334,22 +320,21 @@ These packages are meant for the following distributions:
 - Debian 11 bullseye
 - Debian 10 buster
 
-## ENV variables
+##### 环境变量
 
-`hbbs` and `hbbr` can be configured using these ENV variables.
-You can specify the variables as usual or use an `.env` file.
+`hbbs` 和 `hbbr` 可以通过以下环境变量进行配置。你可以像往常一样指定这些变量，或者使用 `.env` 文件。
 
-| variable | binary | description |
+| 变量名 | 适用二进制文件 | 描述 |
 | --- | --- | --- |
-| ALWAYS_USE_RELAY | hbbs | if set to **"Y"** disallows direct peer connection |
-| DB_URL | hbbs | path for database file |
-| DOWNGRADE_START_CHECK | hbbr | delay (in seconds) before downgrade check |
-| DOWNGRADE_THRESHOLD | hbbr | threshold of downgrade check (bit/ms) |
-| KEY | hbbs/hbbr | if set force the use of a specific key, if set to **"_"** force the use of any key |
-| LIMIT_SPEED | hbbr | speed limit (in Mb/s) |
-| PORT | hbbs/hbbr | listening port (21116 for hbbs - 21117 for hbbr) |
-| RELAY_SERVERS | hbbr | IP addresses of machines running the relay server hbbr, or multiple IPs can be specified using commas |
-| RENDZVOUS_SERVERS | hbbs | IP addresses of machines running the rendezvous server hbbs, or multiple IPs can be specified using commas |
-| RUST_LOG | all | set debug level (error\|warn\|info\|debug\|trace) |
-| SINGLE_BANDWIDTH | hbbr | max bandwidth for a single connection (in Mb/s) |
-| TOTAL_BANDWIDTH | hbbr | max total bandwidth (in Mb/s) |
+| ALWAYS_USE_RELAY | hbbs | 如果设置为 **"Y"**，则禁止直接对等连接 |
+| DB_URL | hbbs | 数据库文件路径 |
+| DOWNGRADE_START_CHECK | hbbr | 下降检查延迟（秒） |
+| DOWNGRADE_THRESHOLD | hbbr | 下降检查阈值（bit/ms） |
+| KEY | hbbs/hbbr | 如果设置，则强制使用特定密钥；如果设置为 **"_"**，则强制使用任何密钥 |
+| LIMIT_SPEED | hbbr | 速度限制（Mb/s） |
+| PORT | hbbs/hbbr | 监听端口（hbbs 为 41116，hbbr 为 41117） |
+| RELAY_SERVERS | hbbs | 运行中继 hbbr 的机器的 IP地址或者，用逗号分隔可以指定多个 |
+| RENDZVOUS_SERVERS | hbbs | 运行会面 hbbs 的机器的 IP地址或者，用逗号分隔可以指定多个 |
+| RUST_LOG | 所有 | 设置调试级别（error\|warn\|info\|debug\|trace） |
+| SINGLE_BANDWIDTH | hbbr | 单个连接的最大带宽（Mb/s） |
+| TOTAL_BANDWIDTH | hbbr | 总最大带宽（Mb/s） |
