@@ -138,7 +138,7 @@ impl RendezvousServer {
         let ws_port = port + 2;
         let pm = PeerMap::new().await?;
         log::info!("serial={}", serial);
-        let rendezvous_servers = get_servers(&get_arg("rendezvous-servers"), "rendezvous-servers");
+        let rendezvous_servers = get_servers(&get_arg("RENDZVOUS_SERVERS"), "RENDZVOUS_SERVERS");
         log::info!("Listening on tcp/udp :{}", port);
         log::info!("Listening on tcp :{}, extra port for NAT test", nat_port);
         log::info!("Listening on websocket :{}", ws_port);
@@ -183,7 +183,7 @@ impl RendezvousServer {
         log::info!("mask: {:?}", rs.inner.mask);
         log::info!("local-ip: {:?}", rs.inner.local_ip);
         std::env::set_var("PORT_FOR_API", port.to_string());
-        rs.parse_relay_servers(&get_arg("relay-servers"));
+        rs.parse_relay_servers(&get_arg("RELAY_SERVERS"));
         let mut listener = create_tcp_listener(port).await?;
         let mut listener2 = create_tcp_listener(nat_port).await?;
         let mut listener3 = create_tcp_listener(ws_port).await?;
@@ -430,7 +430,7 @@ impl RendezvousServer {
                                 .collect(),
                         );
                         log::info!(
-                            "configure updated: serial={} rendezvous-servers={:?}",
+                            "configure updated: serial={} RENDZVOUS_SERVERS={:?}",
                             self.inner.serial,
                             self.rendezvous_servers
                         );
@@ -1022,7 +1022,7 @@ impl RendezvousServer {
     }
 
     fn parse_relay_servers(&mut self, relay_servers: &str) {
-        let rs = get_servers(relay_servers, "relay-servers");
+        let rs = get_servers(relay_servers, "RELAY_SERVERS");
         self.relay_servers0 = Arc::new(rs);
         self.relay_servers = self.relay_servers0.clone();
     }
@@ -1054,7 +1054,7 @@ impl RendezvousServer {
                     "test-geo(tg) <ip1> <ip2>"
                 )
             }
-            Some("relay-servers" | "rs") => {
+            Some("RELAY_SERVERS" | "rs") => {
                 if let Some(rs) = fds.next() {
                     self.tx.send(Data::RelayServers0(rs.to_owned())).ok();
                 } else {
