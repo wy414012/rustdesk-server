@@ -138,7 +138,7 @@ impl RendezvousServer {
         let ws_port = port + 2;
         let pm = PeerMap::new().await?;
         log::info!("serial={}", serial);
-        let rendezvous_servers = get_servers(&get_arg("RENDZVOUS_SERVERS"), "RENDZVOUS_SERVERS");
+        let rendezvous_servers = get_servers(&get_arg("RENDZVOUS_SERVERS"), "rendezvous-servers");
         log::info!("Listening on tcp/udp :{}", port);
         log::info!("Listening on tcp :{}, extra port for NAT test", nat_port);
         log::info!("Listening on websocket :{}", ws_port);

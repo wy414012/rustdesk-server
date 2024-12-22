@@ -332,7 +332,7 @@ docker run --rm --entrypoint /usr/bin/rustdesk-utils  wy368/openrustdesk-server:
 | DOWNGRADE_THRESHOLD | hbbr | 下降检查阈值（bit/ms） |
 | KEY | hbbs/hbbr | 如果设置，则强制使用特定密钥；如果设置为 **"_"**，则强制使用任何密钥 |
 | LIMIT_SPEED | hbbr | 速度限制（Mb/s） |
-| PORT | hbbs/hbbr | 监听端口（hbbs 为 41116，hbbr 为 41117） |
+| PORT | hbbs/hbbr | 监听端口（hbbs 为 21116，hbbr 为 21117） |
 | RELAY_SERVERS | hbbs | 运行中继 hbbr 的机器的 IP地址或者，用逗号分隔可以指定多个 |
 | RENDZVOUS_SERVERS | hbbs | 运行会面 hbbs 的机器的 IP地址或者，用逗号分隔可以指定多个 |
 | RUST_LOG | 所有 | 设置调试级别（error\|warn\|info\|debug\|trace） |
