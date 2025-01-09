@@ -823,7 +823,7 @@ impl RendezvousServer {
         {
             let mut msg_out = RendezvousMessage::new();
             msg_out.set_punch_hole_response(PunchHoleResponse {
-                other_failure: String::from("The connection is not allowed. You have not logged in."),
+                other_failure: String::from("拒绝访问，您尚未登录，请联系管理员！"),
                 ..Default::default()
             });
             return Ok((msg_out, None));
