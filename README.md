@@ -338,3 +338,4 @@ docker run --rm --entrypoint /usr/bin/rustdesk-utils  wy368/openrustdesk-server:
 | RUST_LOG | 所有 | 设置调试级别（error\|warn\|info\|debug\|trace） |
 | SINGLE_BANDWIDTH | hbbr | 单个连接的最大带宽（Mb/s） |
 | TOTAL_BANDWIDTH | hbbr | 总最大带宽（Mb/s） |
+| LOGGED_IN_ONLY | hbbs | 如果设置为 **"YES"**，则禁止尚未登录用户发起的远控请求 |
