@@ -813,6 +813,22 @@ impl RendezvousServer {
             });
             return Ok((msg_out, None));
         }
+
+
+
+            if ph.token.is_empty() && std::env::var("LOGGED_IN_ONLY")
+            .unwrap_or_default()
+            .to_uppercase()
+            == "Y"
+        {
+            let mut msg_out = RendezvousMessage::new();
+            msg_out.set_punch_hole_response(PunchHoleResponse {
+                other_failure: String::from("The connection is not allowed. You have not logged in."),
+                ..Default::default()
+            });
+            return Ok((msg_out, None));
+        }
+        
         let id = ph.id;
         // punch hole request from A, relay to B,
         // check if in same intranet first,
