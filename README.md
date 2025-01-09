@@ -327,7 +327,7 @@ docker run --rm --entrypoint /usr/bin/rustdesk-utils  wy368/openrustdesk-server:
 | 变量名 | 适用二进制文件 | 描述 |
 | --- | --- | --- |
 | ALWAYS_USE_RELAY | hbbs | 如果设置为 **"Y"**，则禁止直接对等连接 |
-| LOGGED_IN_ONLY | hbbs | 如果设置为 **"YES"**，则禁止尚未登录用户发起的远控请求 |
+| LOGGED_IN_ONLY | hbbs | 如果设置为 **"Y"**，则禁止尚未登录用户发起的远控请求 |
 | DB_URL | hbbs | 数据库文件路径 |
 | DOWNGRADE_START_CHECK | hbbr | 下降检查延迟（秒） |
 | DOWNGRADE_THRESHOLD | hbbr | 下降检查阈值（bit/ms） |
