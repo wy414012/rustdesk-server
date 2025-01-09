@@ -813,9 +813,6 @@ impl RendezvousServer {
             });
             return Ok((msg_out, None));
         }
-
-
-
             if ph.token.is_empty() && std::env::var("LOGGED_IN_ONLY")
             .unwrap_or_default()
             .to_uppercase()
