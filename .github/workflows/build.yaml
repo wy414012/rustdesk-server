@@ -47,7 +47,7 @@ jobs:
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: "1.82.0"
+          toolchain: "1.87.0"
           override: true
           default: true
           components: rustfmt
@@ -65,7 +65,7 @@ jobs:
         run: chmod -v a+x target/${{ matrix.job.target }}/release/*
 
       - name: Publish Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: binaries-linux-${{ matrix.job.name }}
           path: |
@@ -88,7 +88,7 @@ jobs:
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: "1.82.0"
+          toolchain: "1.87.0"
           override: true
           default: true
           components: rustfmt
@@ -155,7 +155,7 @@ jobs:
           recursive: false
 
       - name: Publish Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: binaries-windows-x86_64
           path: |
