@@ -34,8 +34,10 @@ jobs:
           #- { name: "amd64fb", target: "x86_64-unknown-freebsd" }
 
     steps:
-      - name: Checkout
+      - name: Checkout source code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
     
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@v1
