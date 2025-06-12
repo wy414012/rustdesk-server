@@ -86,8 +86,8 @@ pub async fn start(port: &str, key: &str) -> ResultType<()> {
         loop {
             log::info!("Start");
             io_loop(
-                listen_any(port, true).await?,
-                listen_any(port2, true).await?,
+                listen_any(port,).await?,
+                listen_any(port2,).await?,
                 &key,
             )
             .await;
