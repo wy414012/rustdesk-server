@@ -46,9 +46,9 @@ jobs:
           targets: ${{ matrix.job.target }}
           components: "rustfmt"
           
-      - uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: ${{ matrix.job.os }}
+#      - uses: Swatinem/rust-cache@v2
+#        with:
+#          prefix-key: ${{ matrix.job.os }}
 
       - name: Build
         uses: actions-rs/cargo@v1
