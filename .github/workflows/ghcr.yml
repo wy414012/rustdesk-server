@@ -166,7 +166,7 @@ jobs:
 
       # Create and push manifest for :ve.rs.ion tag
       - name: Create and push manifest (:ve.rs.ion)
-        uses: Noelware/docker-manifest-action@master
+        uses: Noelware/docker-manifest-action@0.4.3
         if: github.event_name != 'workflow_dispatch'
         with:
           base-image: ghcr.io/${{ github.repository }}-s6:${{ env.GIT_TAG }}
@@ -179,7 +179,7 @@ jobs:
 
       # Create and push manifest for :major tag
       - name: Create and push manifest (:major)
-        uses: Noelware/docker-manifest-action@master
+        uses: Noelware/docker-manifest-action@0.4.3
         with:
           base-image: ghcr.io/${{ github.repository }}-s6:${{ env.MAJOR_TAG }}
           extra-images: |
@@ -191,7 +191,7 @@ jobs:
 
       # Create and push manifest for :latest tag
       - name: Create and push manifest (:latest)
-        uses: Noelware/docker-manifest-action@master
+        uses: Noelware/docker-manifest-action@0.4.3
         with:
           base-image: ghcr.io/${{ github.repository }}-s6:${{ env.LATEST_TAG }}
           extra-images: |
@@ -295,7 +295,7 @@ jobs:
 
       # Create and push manifest for :ve.rs.ion tag
       - name: Create and push manifest (:ve.rs.ion)
-        uses: Noelware/docker-manifest-action@master
+        uses: Noelware/docker-manifest-action@0.4.3
         if: github.event_name != 'workflow_dispatch'
         with:
           base-image: ghcr.io/${{ github.repository }}:${{ env.GIT_TAG }}
@@ -308,7 +308,7 @@ jobs:
 
       # Create and push manifest for :major tag
       - name: Create and push manifest (:major)
-        uses: Noelware/docker-manifest-action@master
+        uses: Noelware/docker-manifest-action@0.4.3
         with:
           base-image: ghcr.io/${{ github.repository }}:${{ env.MAJOR_TAG }}
           extra-images: |
@@ -320,7 +320,7 @@ jobs:
 
       # Create and push manifest for :latest tag
       - name: Create and push manifest (:latest)
-        uses: Noelware/docker-manifest-action@master
+        uses: Noelware/docker-manifest-action@0.4.3
         with:
           base-image: ghcr.io/${{ github.repository }}:${{ env.LATEST_TAG }}
           extra-images: |
