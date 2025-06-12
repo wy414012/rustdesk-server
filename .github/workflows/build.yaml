@@ -4,14 +4,20 @@ on:
   push:
   pull_request:
   workflow_dispatch:
-  release:
-    types: [published]
+    inputs:
+      upload-artifact:
+        type: boolean
+        default: true
+      upload-tag:
+        type: string
+        default: "nightly"
 
 env:
   RS_PUB_KEY: "${{ secrets.RS_PUB_KEY }}"
   RENDEZVOUS_SERVER: "${{ secrets.RENDEZVOUS_SERVER }}"
   API_SERVER: "${{ secrets.API_SERVER }}"
-  
+permissions:
+   contents: write  # 必需 
 jobs:
 
   # binary build
