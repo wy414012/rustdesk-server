@@ -15,7 +15,7 @@ COPY rootfs /
 ENV RELAY=relay.example.com
 ENV ENCRYPTED_ONLY=0
 
-EXPOSE 21115 21116 21116/udp 21117 21118 21119
+EXPOSE 41115 41116 41116/udp 41117 41118 41119
 
 HEALTHCHECK --interval=10s --timeout=5s CMD /usr/bin/healthcheck.sh
 

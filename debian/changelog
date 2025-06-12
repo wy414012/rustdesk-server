@@ -1,3 +1,6 @@
+rustdesk-server (1.4.1) UNRELEASED; urgency=medium
+  * Update the version to 1.4.1 to match the client.
+
 rustdesk-server (1.4.0) UNRELEASED; urgency=medium
   * Update the version to 1.4.0 to match the client.
 

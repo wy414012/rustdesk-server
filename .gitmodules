@@ -1,4 +1,4 @@
 [submodule "libs/hbb_common"]
 	path = libs/hbb_common
 	url = https://github.com/wy414012/hbb_common
-	branch = shared
+	branch = main
