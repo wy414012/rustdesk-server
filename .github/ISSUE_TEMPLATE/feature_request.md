@@ -1,25 +1,24 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: 功能请求
+about: 为项目提议新功能
 title: ''
 labels: 'enhancement'
 assignees: ''
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is.
+**功能背景**
+请说明这个功能请求是否为了解决某个具体问题？如果是，请描述该问题。
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+**期望的方案**
+清晰描述你希望实现的功能或改进。
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+**考虑过的替代方案**
+描述你考虑过的其他实现方式或替代方案。
 
-**Additional context**
-Add any other context about the feature request here.
+**补充说明**
+可在此添加其他相关背景信息（如使用场景、技术考量等）。
 
-**Notes**
- - Please write in english only. If you provide some images in different languages, you're required to write a translation in english.
- - In any case, **NEVER** put here the content if your `id_ed25519` file
- 
+**注意事项**
+ - 严禁在此粘贴 `id_ed25519` 密钥文件内容
+ - 建议提供相关截图或示意图（如有非中文内容需附加说明）
