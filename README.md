@@ -164,22 +164,39 @@ docker run --name rustdesk-server \
 ```yaml
 version: '3'
 
+networks:
+  rustdesk-net:
+    external: false
+
 services:
-  rustdesk-server:
-    container_name: rustdesk-server
+  hbbs:
+    container_name: hbbs
     ports:
       - 21115:21115
       - 21116:21116
       - 21116:21116/udp
-      - 21117:21117
       - 21118:21118
+    image: wy368/openrustdesk-server-s6:latest
+    command: hbbs -r rustdesk.example.com:21117
+    volumes:
+      - ./data:/root
+    networks:
+      - rustdesk-net
+    depends_on:
+      - hbbr
+    restart: unless-stopped
+
+  hbbr:
+    container_name: hbbr
+    ports:
+      - 21117:21117
       - 21119:21119
-    image: wy368/openrustdesk-server:latest
-    environment:
-      - "RELAY=rustdesk.example.com:21117"
-      - "ENCRYPTED_ONLY=1"
+    image: wy368/openrustdesk-server-s6:latest
+    command: hbbr
     volumes:
       - ./data:/data
+    networks:
+      - rustdesk-net
     restart: unless-stopped
 ```
 
