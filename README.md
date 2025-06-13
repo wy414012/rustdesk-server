@@ -65,7 +65,7 @@ docker run --name hbbr -p 21117:21117 -p 21119:21119 -v "$PWD/data:/root" -d wy3
 
 `relay-server-ip` 参数是运行这些容器的服务器的 IP 地址（或 DNS 名称）。可选的 `port` 参数用于当您使用不同于 **21117** 的端口时。
 
-您也可以使用 docker-compose，使用此配置作为模板：
+您也可以创建`docker-compose.yml`，使用此配置作为模板：
 
 ```yaml
 version: '3'
@@ -100,12 +100,19 @@ services:
     image: wy368/openrustdesk-server:latest
     command: hbbr
     volumes:
-      - ./data:/root
+      - ./data:/data
     networks:
       - rustdesk-net
     restart: unless-stopped
 ```
+# 使用
+```bash
+# 启动并运行在后台
+docker compose up -d 
+# 关闭
+docker compose down
 
+```
 编辑第 16 行以指向您的中继服务器（监听端口 21117）。如果需要，您还可以编辑卷行（第 18 行和第 33 行）。
 
 (docker-compose 模板由 @lukebarone 和 @QuiGonLeong 提供)
@@ -152,7 +159,7 @@ docker run --name rustdesk-server \
   -v "$PWD/data:/data" -d wy368/openrustdesk-server:latest
 ```
 
-或者您可以使用 docker-compose 文件：
+或者您可以创建`docker-compose.yml`文件：
 
 ```yaml
 version: '3'
