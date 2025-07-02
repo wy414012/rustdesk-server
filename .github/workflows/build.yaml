@@ -161,6 +161,7 @@ jobs:
 
   # github (draft) release with all binaries
   release:
+    if: github.event_name == 'release'
     name: Github release
     needs: 
       - build
@@ -241,6 +242,7 @@ jobs:
           debuild -i -us -uc -b -a${{ matrix.job.debian_platform }}
 
       - name: Create Release
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           prerelease: true
