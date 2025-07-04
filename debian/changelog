@@ -1,47 +1,77 @@
-rustdesk-server (1.4.1) UNRELEASED; urgency=medium
+rustdesk-server (1.4.2) UNRELEASED; urgency=medium
+
   * Update the version to 1.4.1 to match the client.
+  * Update version 1.4.2
+
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 04 Jul 2025 21:44:26 +0800
 
 rustdesk-server (1.4.0) UNRELEASED; urgency=medium
+
   * Update the version to 1.4.0 to match the client.
 
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 04 Jul 2025 18:41:48 +0800
+
 rustdesk-server (1.3.6) UNRELEASED; urgency=medium
+
   * Update the version to 1.3.6 to match the client.
 
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 04 Jul 2025 17:41:48 +0800  
+
 rustdesk-server (1.1.12) UNRELEASED; urgency=medium
+
   * WS real ip
+
   * Bump s6-overlay to v3.2.0.0 and fix env warnings
 
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 04 Jul 2025 16:41:48 +0800
+
 rustdesk-server (1.1.11-1) UNRELEASED; urgency=medium
+
   * set reuse port to make restart friendly
+
   * revert hbbr `-k` to not ruin back-compatibility
 
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 04 Jul 2025 15:41:48 +0800  
+
 rustdesk-server (1.1.11) UNRELEASED; urgency=medium
+
   * change -k to default '-', so you need not to set -k any more
 
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 04 Jul 2025 14:41:48 +0800
+
 rustdesk-server (1.1.10-3) UNRELEASED; urgency=medium
+
   * fix on -2
+
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 04 Jul 2025 13:41:48 +0800
 
 rustdesk-server (1.1.10-2) UNRELEASED; urgency=medium
 
   * fix hangup signal exit when run with nohup
   * some minors
 
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 04 Jul 2025 12:41:48 +0800
+
 rustdesk-server (1.1.9) UNRELEASED; urgency=medium
 
   * remove unsafe
+
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 04 Jul 2025 11:41:48 +0800
 
 rustdesk-server (1.1.8) UNRELEASED; urgency=medium
 
   * fix test_hbbs and mask in lan
 
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 04 Jul 2024 21:41:48 +0800
+
 rustdesk-server (1.1.7) UNRELEASED; urgency=medium
 
   * ipv6 support
 
- -- rustdesk <info@rustdesk.com>  Wed, 11 Jan 2023 11:27:00 +0800
+ -- Open Rustdesk Support Team <info@rustdesk.com>  Wed, 11 Jan 2023 11:27:00 +0800
 
 rustdesk-server (1.1.6) UNRELEASED; urgency=medium
 
   * Initial release
 
- -- open-trade <info@rustdesk.com>  Fri, 15 Jul 2022 12:27:27 +0200
+ -- Open Rustdesk Support Team <info@rustdesk.com>  Fri, 15 Jul 2022 12:27:27 +0200
