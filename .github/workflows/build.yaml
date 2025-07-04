@@ -1,9 +1,7 @@
-name: main-build
+name: Build OpenRustDesk-Server
 
 on:
-  push:
-  pull_request:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       upload-artifact:
         type: boolean
@@ -159,9 +157,8 @@ jobs:
             ui\SignOutput\RustDeskServer.Setup.exe
           if-no-files-found: error
 
-  # github (draft) release with all binaries
+  # github (nightly) release with all binaries
   release:
-    if: github.event_name == 'release'
     name: Github release
     needs: 
       - build
@@ -195,6 +192,7 @@ jobs:
           zip ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip ${{ matrix.job.name }}/*
 
       - name: Create Release (${{ matrix.job.os }} - (${{ matrix.job.name }})
+        if: env.UPLOAD_ARTIFACT == 'true'
         uses: softprops/action-gh-release@v2
         with:
           prerelease: true
@@ -242,7 +240,7 @@ jobs:
           debuild -i -us -uc -b -a${{ matrix.job.debian_platform }}
 
       - name: Create Release
-        if: github.event_name == 'release'
+        if: env.UPLOAD_ARTIFACT == 'true'
         uses: softprops/action-gh-release@v2
         with:
           prerelease: true
