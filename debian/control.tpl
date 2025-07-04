@@ -1,10 +1,10 @@
 Source: rustdesk-server
 Section: net
 Priority: optional
-Maintainer: open-trade <info@rustdesk.com>
+Maintainer: Open Rustdesk Support Team <ymwlpoolc@qq.com>
 Build-Depends: debhelper (>= 10), pkg-config
 Standards-Version: 4.5.0
-Homepage: https://rustdesk.com/
+Homepage: https://github.com/wy414012/rustdesk-server/
 
 Package: rustdesk-server-hbbs
 Architecture: {{ ARCH }}

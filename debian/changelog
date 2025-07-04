@@ -1,44 +1,12 @@
+rustdesk-server (1.4.1) UNRELEASED; urgency=medium
+
+  * Update version 1.4.1
+  * 处理相关格式问题 
+
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 04 Jul 2025 19:03:43 +0800
+
 rustdesk-server (1.4.0) UNRELEASED; urgency=medium
-  * Update the version to 1.4.0 to match the client.
-
-rustdesk-server (1.3.6) UNRELEASED; urgency=medium
-  * Update the version to 1.3.6 to match the client.
-
-rustdesk-server (1.1.12) UNRELEASED; urgency=medium
-  * WS real ip
-  * Bump s6-overlay to v3.2.0.0 and fix env warnings
-
-rustdesk-server (1.1.11-1) UNRELEASED; urgency=medium
-  * set reuse port to make restart friendly
-  * revert hbbr `-k` to not ruin back-compatibility
-
-rustdesk-server (1.1.11) UNRELEASED; urgency=medium
-  * change -k to default '-', so you need not to set -k any more
-
-rustdesk-server (1.1.10-3) UNRELEASED; urgency=medium
-  * fix on -2
-
-rustdesk-server (1.1.10-2) UNRELEASED; urgency=medium
-
-  * fix hangup signal exit when run with nohup
-  * some minors
-
-rustdesk-server (1.1.9) UNRELEASED; urgency=medium
-
-  * remove unsafe
-
-rustdesk-server (1.1.8) UNRELEASED; urgency=medium
-
-  * fix test_hbbs and mask in lan
-
-rustdesk-server (1.1.7) UNRELEASED; urgency=medium
-
-  * ipv6 support
-
- -- rustdesk <info@rustdesk.com>  Wed, 11 Jan 2023 11:27:00 +0800
-
-rustdesk-server (1.1.6) UNRELEASED; urgency=medium
 
   * Initial release
 
- -- open-trade <info@rustdesk.com>  Fri, 15 Jul 2022 12:27:27 +0200
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 04 Jul 2025 16:00:59 +0800
