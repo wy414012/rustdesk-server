@@ -16,6 +16,7 @@ env:
   API_SERVER: "${{ secrets.API_SERVER }}"
 permissions:
    contents: write  # 必需 
+
 jobs:
 
   # binary build
@@ -157,7 +158,7 @@ jobs:
             ui\SignOutput\RustDeskServer.Setup.exe
           if-no-files-found: error
 
-  # github (nightly) release with all binaries
+  # github (nightly) release with all binaries
   release:
     name: Github release
     needs: 
@@ -197,6 +198,14 @@ jobs:
         with:
           prerelease: true
           files: ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip
+
+      - name: Push release to GitHub
+        if: env.UPLOAD_TAG == 'nightly'
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions"
+          git tag ${{ github.ref_name }}
+          git push origin ${{ github.ref_name }}
 
   deb-package:
     name: debian package - ${{ matrix.job.name }}
