@@ -14,6 +14,9 @@ env:
   RS_PUB_KEY: "${{ secrets.RS_PUB_KEY }}"
   RENDEZVOUS_SERVER: "${{ secrets.RENDEZVOUS_SERVER }}"
   API_SERVER: "${{ secrets.API_SERVER }}"
+  TAG_NAME: "${{ inputs.upload-tag }}"
+  UPLOAD_ARTIFACT: "${{ inputs.upload-artifact }}"
+
 permissions:
    contents: write  # 必需 
 
@@ -197,15 +200,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           prerelease: true
+          tag_name: ${{ env.TAG_NAME }}
           files: ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip
-
-      - name: Push release to GitHub
-        if: env.UPLOAD_TAG == 'nightly'
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Actions"
-          git tag ${{ github.ref_name }}
-          git push origin ${{ github.ref_name }}
 
   deb-package:
     name: debian package - ${{ matrix.job.name }}
@@ -253,6 +249,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           prerelease: true
+          tag_name: ${{ env.TAG_NAME }}
           files: |
             debian-build/rustdesk-server-hbbr_*_${{ matrix.job.debian_platform }}.deb
             debian-build/rustdesk-server-hbbs_*_${{ matrix.job.debian_platform }}.deb
