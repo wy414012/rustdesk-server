@@ -1,4 +1,4 @@
-name: build
+name: Build OpenRustDesk-Server
 
 # ------------- NOTE
 # please setup some secrets before running this workflow:

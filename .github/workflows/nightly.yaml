@@ -1,0 +1,15 @@
+name: Nightly Build
+
+on:
+  # 定时任务已禁用（仅保留手动触发）
+  # schedule:
+  #   - cron: "0 0 * * *"  # 每日UTC午夜
+  workflow_dispatch:
+
+jobs:
+  run-nightly-build:
+    uses: ./.github/workflows/build.yaml
+    secrets: inherit
+    with:
+      upload-artifact: true
+      upload-tag: "nightly"
