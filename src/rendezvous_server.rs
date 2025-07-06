@@ -74,16 +74,12 @@ struct Encrypt {
 impl Encrypt {
     pub fn dec(&mut self, bytes: &BytesMut) -> Result<Vec<u8>, ()> {
         self.dec_seqnum += 1;
-        Ok(secretbox::open(
-            bytes,
-            &Self::get_nonce(self.dec_seqnum),
-            &self.key,
-        )?)
+        secretbox::open(bytes, &Self::get_nonce(self.dec_seqnum), &self.key)
     }
 
     pub fn enc(&mut self, data: &[u8]) -> Vec<u8> {
         self.enc_seqnum += 1;
-        secretbox::seal(&data, &Self::get_nonce(self.enc_seqnum), &self.key)
+        secretbox::seal(data, &Self::get_nonce(self.enc_seqnum), &self.key)
     }
 
     fn get_nonce(seqnum: u64) -> Nonce {
@@ -550,7 +546,7 @@ impl RendezvousServer {
                     }
                 }
                 Some(rendezvous_message::Union::KeyExchange(ex)) => {
-                    log::trace!("KeyExchange {:?} <- bytes: {:?}", addr, hex::encode(&bytes));
+                    log::trace!("KeyExchange {:?} <- bytes: {:?}", addr, hex::encode(bytes));
                     if ex.keys.len() != 2 {
                         log::error!("Handshake failed: invalid phase 2 key exchange message");
                         return false;
@@ -564,7 +560,7 @@ impl RendezvousServer {
                         their_pk,
                         &cryptobox,
                     );
-                    log::debug!("KeyExchange symetric key: {:?}", hex::encode(&symetric_key));
+                    log::debug!("KeyExchange symetric key: {:?}", hex::encode(symetric_key));
                     let key = secretbox::Key::from_slice(&symetric_key);
                     match key {
                         Some(key) => {
@@ -895,7 +891,7 @@ impl RendezvousServer {
         stream: &mut FramedStream,
         peers: Vec<String>,
     ) -> ResultType<()> {
-        let mut states = BytesMut::zeroed((peers.len() + 7) / 8);
+        let mut states = BytesMut::zeroed(peers.len().div_ceil(8));
         for (i, peer_id) in peers.iter().enumerate() {
             if let Some(peer) = self.pm.get_in_memory(peer_id).await {
                 let elapsed = peer.read().await.last_reg_time.elapsed().as_millis() as i32;
@@ -1381,24 +1377,21 @@ impl RendezvousServer {
         let mut msg_out = RendezvousMessage::new();
         log::debug!("KeyExchange phase 1: send our pk for this tcp connection in a message signed with our server key");
         let sk = &self.inner.sk;
-        match sk {
-            Some(sk) => {
-                let our_pk_b = self.inner.secure_tcp_pk_b.clone();
-                let sm = sign::sign(&our_pk_b.0, &sk);
+        if let Some(sk) = sk {
+            let our_pk_b = self.inner.secure_tcp_pk_b;
+            let sm = sign::sign(&our_pk_b.0, sk);
 
-                let bytes_sm = Bytes::from(sm);
-                msg_out.set_key_exchange(KeyExchange {
-                    keys: vec![bytes_sm],
-                    ..Default::default()
-                });
-                log::trace!(
-                    "KeyExchange {:?} -> bytes: {:?}",
-                    addr,
-                    hex::encode(Bytes::from(msg_out.write_to_bytes().unwrap()))
-                );
-                Self::send_to_sink(sink, msg_out).await;
-            }
-            None => {}
+            let bytes_sm = Bytes::from(sm);
+            msg_out.set_key_exchange(KeyExchange {
+                keys: vec![bytes_sm],
+                ..Default::default()
+            });
+            log::trace!(
+                "KeyExchange {:?} -> bytes: {:?}",
+                addr,
+                hex::encode(Bytes::from(msg_out.write_to_bytes().unwrap()))
+            );
+            Self::send_to_sink(sink, msg_out).await;
         }
     }
 }
