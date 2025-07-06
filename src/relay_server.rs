@@ -625,7 +625,7 @@ impl StreamTrait for tokio_tungstenite::WebSocketStream<TcpStream> {
                         _ => Some(Ok(BytesMut::new())),
                     }
                 }
-                Err(err) => Some(Err(Error::new(std::io::ErrorKind::Other, err.to_string()))),
+                Err(err) => Some(Err(Error::other(err.to_string()))),
             }
         } else {
             None
