@@ -1,3 +1,11 @@
+rustdesk-server (1.4.2) UNRELEASED; urgency=medium
+
+  * 明确CI工作流使用的版本，修复客户端匹配问题
+  * 修复hbbs中历史遗留问题
+  * Update version 1.4.2
+
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Mon, 07 Jul 2025 12:48:58 +0800
+
 rustdesk-server (1.4.1) UNRELEASED; urgency=medium
 
   * Update version 1.4.1
