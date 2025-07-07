@@ -19,9 +19,8 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: "1.87.0" #stable
           override: true
-      #- uses: Swatinem/rust-cache@v2
       - uses: actions-rs/cargo@v1
         with:
           command: check
@@ -36,9 +35,8 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: "1.87.0" # stable
           override: true
-      #- uses: Swatinem/rust-cache@v2
       - uses: actions-rs/cargo@v1
         with:
           command: test
@@ -54,10 +52,9 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: "1.87.0" # stable
           override: true
           components: rustfmt
-      #- uses: Swatinem/rust-cache@v2
       - uses: actions-rs/cargo@v1
         with:
           command: build
@@ -76,10 +73,9 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: "1.87.0" # stable
           override: true
           components: clippy
-      #- uses: Swatinem/rust-cache@v2
       - uses: actions-rs/cargo@v1
         with:
           command: clippy

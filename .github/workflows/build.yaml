@@ -129,7 +129,7 @@ jobs:
 
       - name: Build UI setup file
         run: |
-          rustup default nightly
+          rustup default 1.87.0
           cargo build --release
           xcopy /y ..\target\x86_64-pc-windows-msvc\release\*.exe setup\bin\
           xcopy /y target\release\*.exe setup\

@@ -727,11 +727,11 @@ impl RendezvousServer {
     }
 
     #[inline]
-    async fn handle_hole_sent<'a>(
+    async fn handle_hole_sent(
         &mut self,
         phs: PunchHoleSent,
         addr: SocketAddr,
-        socket: Option<&'a mut FramedSocket>,
+        socket: Option<&mut FramedSocket>,
     ) -> ResultType<()> {
         // punch hole sent from B, tell A that B is ready to be connected
         let addr_a = AddrMangle::decode(&phs.socket_addr);
@@ -761,11 +761,11 @@ impl RendezvousServer {
     }
 
     #[inline]
-    async fn handle_local_addr<'a>(
+    async fn handle_local_addr(
         &mut self,
         la: LocalAddr,
         addr: SocketAddr,
-        socket: Option<&'a mut FramedSocket>,
+        socket: Option<&mut FramedSocket>,
     ) -> ResultType<()> {
         // relay local addrs of B to A
         let addr_a = AddrMangle::decode(&la.socket_addr);
@@ -1001,7 +1001,7 @@ impl RendezvousServer {
             counter.1 = now;
 
             let counter = &mut old.1;
-            let is_new = counter.0.get(id).is_none();
+            let is_new = !counter.0.contains(id);
             if counter.1.elapsed().as_secs() > DAY_SECONDS {
                 counter.0.clear();
             } else if counter.0.len() > 300 {
