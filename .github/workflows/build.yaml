@@ -16,6 +16,7 @@ env:
   API_SERVER: "${{ secrets.API_SERVER }}"
   TAG_NAME: "${{ inputs.upload-tag }}"
   UPLOAD_ARTIFACT: "${{ inputs.upload-artifact }}"
+  LATEST_TAG: "latest"
 
 permissions:
    contents: write 
