@@ -1,28 +1,27 @@
 name: Build OpenRustDesk-Server
 
-# ------------- NOTE
-# please setup some secrets before running this workflow:
-# DOCKER_IMAGE should be the target image name on docker hub (e.g. "rustdesk/rustdesk-server-s6" )
-# DOCKER_IMAGE_CLASSIC should be the target image name on docker hub for the old build (e.g. "rustdesk/rustdesk-server" )
-# DOCKER_USERNAME is the username you normally use to login at https://hub.docker.com/
-# DOCKER_PASSWORD is a token you should create under "account settings / security" with read/write access
-
 on:
-  workflow_dispatch:
-  push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
-      - '[0-9]+.[0-9]+.[0-9]+'
-      - 'v[0-9]+.[0-9]+.[0-9]+-[0-9]+'
-      - '[0-9]+.[0-9]+.[0-9]+-[0-9]+'
+  workflow_call:
+    inputs:
+      upload-artifact:
+        type: boolean
+        default: true
+      upload-tag:
+        type: string
+        default: "nightly"
 
 env:
-  CARGO_TERM_COLOR: always
-  LATEST_TAG: latest
+  RS_PUB_KEY: "${{ secrets.RS_PUB_KEY }}"
+  RENDEZVOUS_SERVER: "${{ secrets.RENDEZVOUS_SERVER }}"
+  API_SERVER: "${{ secrets.API_SERVER }}"
+  TAG_NAME: "${{ inputs.upload-tag }}"
+  UPLOAD_ARTIFACT: "${{ inputs.upload-artifact }}"
+
+permissions:
+   contents: write 
   
 jobs:
 
-  # binary build
   build:
 
     name: Build - ${{ matrix.job.name }}
@@ -165,9 +164,7 @@ jobs:
             ui\SignOutput\RustDeskServer.Setup.exe
           if-no-files-found: error
 
-  # github (draft) release with all binaries
   release:
-
     name: Github release
     needs: 
       - build
@@ -202,14 +199,15 @@ jobs:
           zip ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip ${{ matrix.job.name }}/*
 
       - name: Create Release (${{ matrix.job.os }} - (${{ matrix.job.name }})
-        uses: softprops/action-gh-release@v1
+        if: env.UPLOAD_ARTIFACT == 'true'
+        uses: softprops/action-gh-release@v2
         with:
-          draft: true
+          prerelease: true
+          tag_name: ${{ env.TAG_NAME }}
           files: ${{ matrix.job.name }}/rustdesk-server-${{ matrix.job.os }}-${{ matrix.job.name }}${{ matrix.job.suffix }}.zip
             
   # docker build and push of single-arch images
   docker:
-
     name: Docker push - ${{ matrix.job.name }}
     needs: build
     runs-on: ubuntu-latest
@@ -331,7 +329,6 @@ jobs:
             
   # docker build and push of single-arch images
   docker-classic:
-
     name: Docker push - ${{ matrix.job.name }}
     needs: build
     runs-on: ubuntu-latest
@@ -399,11 +396,9 @@ jobs:
 
   # docker build and push of multiarch images
   docker-manifest-classic:
-
     name: Docker manifest
     needs: docker
     runs-on: ubuntu-latest
-
     steps:
 
       - name: Log in to Docker Hub
@@ -449,7 +444,6 @@ jobs:
 
 
   deb-package:
-
     name: debian package - ${{ matrix.job.name }}
     needs: build
     runs-on: ubuntu-latest
@@ -491,9 +485,11 @@ jobs:
           debuild -i -us -uc -b -a${{ matrix.job.debian_platform }}
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        if: env.UPLOAD_ARTIFACT == 'true'
+        uses: softprops/action-gh-release@v2
         with:
-          draft: true
+          prerelease: true
+          tag_name: ${{ env.TAG_NAME }}
           files: |
             debian-build/rustdesk-server-hbbr_*_${{ matrix.job.debian_platform }}.deb
             debian-build/rustdesk-server-hbbs_*_${{ matrix.job.debian_platform }}.deb
