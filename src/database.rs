@@ -94,13 +94,28 @@ impl Database {
     }
 
     pub async fn get_peer(&self, id: &str) -> ResultType<Option<Peer>> {
-        Ok(sqlx::query_as!(
+        let peer = sqlx::query_as!(
             Peer,
             "select guid, id, uuid, pk, user, status, info from peer where id = ?",
             id
         )
         .fetch_optional(self.pool.get().await?.deref_mut())
-        .await?)
+        .await?;
+
+        if let Some(ref peer) = peer {
+            // 确保所有字段都被使用
+            let _ = (
+                &peer.guid,
+                &peer.id,
+                &peer.uuid,
+                &peer.pk,
+                &peer.user,
+                &peer.info,
+                &peer.status,
+            );
+        }
+
+        Ok(peer)
     }
 
     pub async fn insert_peer(
