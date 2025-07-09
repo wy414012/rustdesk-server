@@ -1,32 +1,182 @@
-# OpenRustDesk Server
+# RustDesk 自建服务器指南
 
-[![构建](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml/badge.svg)](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml)
+[![构建状态](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml/badge.svg)](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml)
 
-[**下载**](https://github.com/wy414012/rustdesk-server/releases)
+[**下载最新版本**](https://github.com/wy414012/rustdesk-server/releases) | 
+[**官方文档**](https://rustdesk.com/docs/en/self-host/) | 
+[**常见问题解答**](https://github.com/rustdesk/rustdesk/wiki/FAQ)
 
-[**手册**](https://rustdesk.com/docs/en/self-host/)
+RustDesk 是一款免费开源的远程桌面软件，通过自建服务器可以获得更好的性能和安全性。
 
-[**常见问题**](https://github.com/rustdesk/rustdesk/wiki/FAQ)
+## 快速开始 (Docker方式)
 
-自托管您自己的 RustDesk 服务器，它是免费和开源的。
+这是最简单的部署方式，适合新手：
 
-## 如何手动构建
+1. 确保已安装 Docker 和 docker-compose
+2. 创建一个新目录并进入：
+   ```bash
+   mkdir rustdesk-server && cd rustdesk-server
+   ```
+3. 创建 `docker-compose.yml` 文件，内容如下：
+   ```yaml
+   version: '3'
+   services:
+     hbbs:
+       image: wy368/openrustdesk-server:latest
+       container_name: hbbs
+       ports:
+         - 21115:21115
+         - 21116:21116
+         - 21116:21116/udp
+         - 21118:21118
+       command: hbbs -r 你的服务器IP:21117
+       volumes:
+         - ./data:/root
+       restart: unless-stopped
+     
+     hbbr:
+       image: wy368/openrustdesk-server:latest
+       container_name: hbbr
+       ports:
+         - 21117:21117
+         - 21119:21119
+       volumes:
+         - ./data:/root
+       restart: unless-stopped
+   ```
+4. 启动服务：
+   ```bash
+   docker-compose up -d
+   ```
+5. 在客户端设置中填写你的服务器地址即可使用
 
+> 💡 提示：将"你的服务器IP"替换为你实际的公网IP或域名
+
+## 术语解释
+
+- **hbbs**: RustDesk的ID服务器和会面服务器，负责设备发现和连接建立
+- **hbbr**: RustDesk的中继服务器，当直接连接失败时负责转发数据
+- **rustdesk-utils**: 命令行工具，用于生成密钥对等管理操作
+
+## 系统要求
+
+- Linux系统(推荐Ubuntu 20.04+或CentOS 7+)
+- 至少1GB内存
+- 2核CPU
+- 10GB可用磁盘空间
+- 开放端口21115-21119(TCP和UDP)
+
+## 手动构建指南
+
+1. 安装必要工具：
+   ```bash
+   # Ubuntu/Debian
+   sudo apt update && sudo apt install -y git curl build-essential
+   
+   # CentOS/RHEL
+   sudo yum install -y git curl gcc-c++ make
+   ```
+
+2. 安装Rust编程语言：
+   ```bash
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+   source $HOME/.cargo/env
+   ```
+
+3. 获取源代码：
+   ```bash
+   git clone https://github.com/wy414012/rustdesk-server.git
+   cd rustdesk-server
+   ```
+
+4. 编译项目：
+   ```bash
+   cargo build --release
+   ```
+   编译完成后，在 `target/release` 目录下会生成三个可执行文件。
+
+5. 运行服务器：
+   ```bash
+   # 启动hbbs(ID服务器)
+   ./target/release/hbbs -r 你的服务器IP:21117
+   
+   # 启动hbbr(中继服务器)
+   ./target/release/hbbr
+   ```
+
+> 💡 提示：如果不想自己编译，可以直接从[发布页面](https://github.com/wy414012/rustdesk-server/releases)下载预编译的二进制文件。
+
+## 服务器配置
+
+可以通过环境变量或命令行参数配置服务器，以下是常用选项：
+
+### 基本配置
+
+1. **指定服务器地址** (必须)
+   ```bash
+   ./hbbs -r 你的服务器IP或域名:21117
+   ```
+
+2. **修改监听端口** (可选)
+   ```bash
+   ./hbbs -p 21115 -k 21116 -m 21118
+   ./hbbr -p 21117 -m 21119
+   ```
+   - `-p`: 主端口
+   - `-k`: 密钥交换端口
+   - `-m`: 管理端口
+
+3. **设置密钥对** (推荐)
+   ```bash
+   ./rustdesk-utils genkeypair
+   ```
+   生成的`id_ed25519.pub`和`id_ed25519`文件需要放在客户端使用
+
+### 环境变量配置
+
+| 变量名 | 说明 | 示例 |
+|--------|------|------|
+| `RUST_LOG` | 设置日志级别 | `RUST_LOG=info` |
+| `RUSTDESK_ENCRYPTION` | 启用端到端加密 | `RUSTDESK_ENCRYPTION=1` |
+
+## 测试连接
+
+1. 检查hbbs是否运行：
+   ```bash
+   telnet 你的服务器IP 21115
+   ```
+
+2. 检查hbbr是否运行：
+   ```bash
+   telnet 你的服务器IP 21117
+   ```
+
+3. 查看日志确认无错误：
+   ```bash
+   docker logs hbbs
+   docker logs hbbr
+   ```
+
+## 常见问题
+
+❓ **客户端无法连接服务器**
+- 检查防火墙是否开放了21115-21119端口
+- 确保`-r`参数指定了正确的公网IP或域名
+- 检查服务器日志是否有错误
+
+❓ **连接速度慢**
+- 尝试使用中继模式(`hbbr`)
+- 检查网络带宽是否充足
+
+❓ **如何更新服务器**
 ```bash
-cargo build --release
+docker-compose pull && docker-compose up -d
 ```
 
-在 `target/release` 目录下会生成三个可执行文件：
+> 📌 更多问题请参考[官方FAQ](https://github.com/rustdesk/rustdesk/wiki/FAQ)
 
-- hbbs - RustDesk ID/会面服务器
-- hbbr - RustDesk 中继服务器
-- rustdesk-utils - RustDesk 命令行工具
-
-您可以在 [Releases](https://github.com/wy414012/rustdesk-server/releases) 页面找到更新的二进制文件。
-
-如果您需要额外功能，[RustDesk Server Pro](https://rustdesk.com/pricing.html) 可能更适合您。
-
-如果您想开发自己的服务器，[rustdesk-server-demo](https://github.com/rustdesk/rustdesk-server-demo) 可能是比这个仓库更好的起点。
+## api服务器
+推荐使用 [lejianwen/rustdesk-api]（https://github.com/lejianwen/rustdesk-api/）
 
 ## Docker 镜像
 
