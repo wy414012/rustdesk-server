@@ -43,7 +43,23 @@ jobs:
         with:
           command: test
           args: --all
-
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: "1.87.0" # stable
+          override: true
+      #- uses: Swatinem/rust-cache@v2
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all
   fmt:
     runs-on: ubuntu-latest
     steps:
