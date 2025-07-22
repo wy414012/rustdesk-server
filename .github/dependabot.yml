@@ -2,7 +2,7 @@ version: 2
 updates:
   - package-ecosystem: "gitsubmodule"
     directory: "/"
-    target-branch: "master"
+    target-branch: "tcp-encrypt"
     schedule:
       interval: "daily"
     commit-message:
