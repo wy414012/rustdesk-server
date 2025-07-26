@@ -14,7 +14,7 @@ env:
   LATEST_TAG: latest
 
 permissions:
-  contents: read
+  contents: write
   packages: write # So need to set "secrets.GITHUB_TOKEN"
 
 jobs:
