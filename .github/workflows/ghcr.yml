@@ -87,6 +87,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Download binaries
         uses: actions/download-artifact@v4
@@ -218,6 +220,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Download binaries
         uses: actions/download-artifact@v4
