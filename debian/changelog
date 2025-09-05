@@ -1,3 +1,10 @@
+rustdesk-server (1.4.3) UNRELEASED; urgency=medium
+
+  * Update the version to 1.4.2 to match the client.
+  * Update version 1.4.3
+
+ -- Open Rustdesk Support Team <ymwlpoolc@qq.com>  Fri, 05 Sep 2025 12:02:56 +0800
+
 rustdesk-server (1.4.2) UNRELEASED; urgency=medium
 
   * Update the version to 1.4.1 to match the client.

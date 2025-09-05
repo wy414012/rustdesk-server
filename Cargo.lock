@@ -1109,7 +1109,7 @@ dependencies = [
 
 [[package]]
 name = "hbbs"
-version = "1.4.2"
+version = "1.4.3"
 dependencies = [
  "async-speed-limit",
  "async-trait",
