@@ -99,14 +99,6 @@ jobs:
           args: --release --all-features --target=x86_64-pc-windows-msvc
           use-cross: true
 
-      - name: Install NSIS
-        run: |
-          iwr -useb get.scoop.sh -outfile 'install.ps1'
-          .\install.ps1 -RunAsAdmin
-          scoop update
-          scoop bucket add extras
-          scoop install nsis
-
       - name: Install Node.js
         uses: actions/setup-node@v5
         with:
@@ -127,14 +119,17 @@ jobs:
           npm i
           npm run build
         working-directory: ./ui/html
-
-      - name: Build UI setup file
+        
+      - name: Install NSIS
         run: |
           iwr -useb get.scoop.sh -outfile 'install.ps1'
           .\install.ps1 -RunAsAdmin
           scoop update
           scoop bucket add extras
           scoop install nsis
+
+      - name: Build UI setup file
+        run: |
           rustup default 1.87.0
           cargo build --release
           xcopy /y ..\target\x86_64-pc-windows-msvc\release\*.exe setup\bin\
