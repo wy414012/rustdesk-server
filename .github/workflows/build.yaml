@@ -74,7 +74,7 @@ jobs:
 
   build-win:
     name: Build - windows
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       
       - name: Checkout source code
@@ -119,7 +119,7 @@ jobs:
           npm i
           npm run build
         working-directory: ./ui/html
-        
+
       - name: Install NSIS
         run: |
           iwr -useb get.scoop.sh -outfile 'install.ps1'
