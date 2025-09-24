@@ -113,6 +113,14 @@ jobs:
           folder: 'target\x86_64-pc-windows-msvc\release'
           recursive: false
 
+      - name: Install NSIS
+        run: |
+          iwr -useb get.scoop.sh -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
+          scoop update
+          scoop bucket add extras
+          scoop install nsis
+
       - name: Build UI browser file
         run: |
           npm i
@@ -121,11 +129,6 @@ jobs:
 
       - name: Build UI setup file
         run: |
-          iwr -useb get.scoop.sh -outfile 'install.ps1'
-          .\install.ps1 -RunAsAdmin
-          scoop update
-          scoop bucket add extras
-          scoop install nsis
           rustup default 1.87.0
           cargo build --release
           xcopy /y ..\target\x86_64-pc-windows-msvc\release\*.exe setup\bin\
