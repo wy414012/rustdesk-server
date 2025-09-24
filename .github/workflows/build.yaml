@@ -77,7 +77,7 @@ jobs:
     runs-on: windows-latest
     defaults:
       run:
-        shell: bash -E -x {0}
+        shell: pwsh -E -x {0}
     steps:
       
       - name: Checkout source code
