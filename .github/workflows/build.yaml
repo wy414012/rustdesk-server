@@ -45,7 +45,7 @@ jobs:
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: "1.87.0"
+          toolchain: "stable"
           override: true
           default: true
           components: rustfmt
@@ -84,7 +84,7 @@ jobs:
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: "1.87.0"
+          toolchain: "stable"
           override: true
           default: true
           components: rustfmt
@@ -129,7 +129,7 @@ jobs:
 
       - name: Build UI setup file
         run: |
-          rustup default 1.87.0
+          rustup default stable
           cargo build --release
           xcopy /y ..\target\x86_64-pc-windows-msvc\release\*.exe setup\bin\
           xcopy /y target\release\*.exe setup\

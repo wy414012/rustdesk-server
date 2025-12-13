@@ -19,7 +19,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: "1.87.0" #stable
+          toolchain: "stable" #stable
           override: true
       - uses: actions-rs/cargo@v1
         with:
@@ -35,7 +35,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: "1.87.0" # stable
+          toolchain: "stable" # stable
           override: true
       - uses: actions-rs/cargo@v1
         with:
@@ -52,7 +52,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: "1.87.0" # stable
+          toolchain: "stable" # stable
           override: true
           components: rustfmt
       - uses: actions-rs/cargo@v1
@@ -73,7 +73,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: "1.87.0" # stable
+          toolchain: "stable" # stable
           override: true
           components: clippy
       - uses: actions-rs/cargo@v1
