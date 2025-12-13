@@ -20,7 +20,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: "1.87.0" # 明确版本暂时停止stable
+          toolchain: "stable" # 明确版本暂时停止stable
           override: true
       #- uses: Swatinem/rust-cache@v2
       - uses: actions-rs/cargo@v1
@@ -37,7 +37,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: "1.87.0" # stable
+          toolchain: "stable" # stable
           override: true
       #- uses: Swatinem/rust-cache@v2
       - uses: actions-rs/cargo@v1
@@ -54,7 +54,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: "1.87.0" # stable
+          toolchain: "stable" # stable
           override: true
       #- uses: Swatinem/rust-cache@v2
       - uses: actions-rs/cargo@v1
@@ -71,7 +71,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: "1.87.0" # stable
+          toolchain: "stable" # stable
           override: true
           components: rustfmt
       #- uses: Swatinem/rust-cache@v2
@@ -93,7 +93,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: "1.87.0" # stable
+          toolchain: "stable" # stable
           override: true
           components: clippy
       #- uses: Swatinem/rust-cache@v2
