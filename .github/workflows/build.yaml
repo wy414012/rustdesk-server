@@ -52,6 +52,9 @@ jobs:
           profile: minimal
           target: ${{ matrix.job.target }}
 
+      - name: Install OpenSSL
+        run: sudo apt-get update && sudo apt-get install -y libssl-dev pkg-config
+        
       - name: Build
         uses: actions-rs/cargo@v1
         with:
