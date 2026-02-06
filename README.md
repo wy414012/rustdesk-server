@@ -1,6 +1,6 @@
 # RustDesk 自建服务器指南
 
-[![构建状态](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml/badge.svg)](https://github.com/wy414012/rustdesk-server/actions/workflows/build.yaml)
+[![test](https://github.com/wy414012/rustdesk-server/actions/workflows/test.yml/badge.svg)](https://github.com/wy414012/rustdesk-server/actions/workflows/test.yml)
 
 [**下载最新版本**](https://github.com/wy414012/rustdesk-server/releases) | 
 [**官方文档**](https://rustdesk.com/docs/en/self-host/) | 
