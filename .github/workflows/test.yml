@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions-rs/toolchain@v1
+      - uses: wy414012/toolchain@master
         with:
           profile: minimal
           toolchain: "stable" # 明确版本暂时停止stable
@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions-rs/toolchain@v1
+      - uses: wy414012/toolchain@master
         with:
           profile: minimal
           toolchain: "stable" # stable
@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions-rs/toolchain@v1
+      - uses: wy414012/toolchain@master
         with:
           profile: minimal
           toolchain: "stable" # stable
@@ -68,7 +68,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions-rs/toolchain@v1
+      - uses: wy414012/toolchain@master
         with:
           profile: minimal
           toolchain: "stable" # stable
@@ -90,7 +90,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions-rs/toolchain@v1
+      - uses: wy414012/toolchain@master
         with:
           profile: minimal
           toolchain: "stable" # stable

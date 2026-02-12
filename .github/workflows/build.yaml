@@ -43,7 +43,7 @@ jobs:
           submodules: recursive
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+        uses: wy414012/toolchain@master
         with:
           toolchain: "stable"
           override: true
@@ -83,7 +83,7 @@ jobs:
           submodules: recursive
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+        uses: wy414012/toolchain@master
         with:
           toolchain: "stable"
           override: true
